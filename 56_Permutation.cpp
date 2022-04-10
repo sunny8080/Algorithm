@@ -51,16 +51,19 @@ void fastIO(){
 class Solution {
     
     public:
-    void permute( char *in, int i){
+
+    // Store all unique permutation of array in in set st
+    void permute( char *in, int i, set<string> &st){
         if( ! in[i] ){
-            cout<<in<<sp;
+            // cout<<in<<sp;
+            st.insert(in);
             return;
         }
 
         // rec case
         for( int j=i; in[j]!='\0'; j++ ){
             swap(in[i], in[j]);
-            permute(in, i+1);
+            permute(in, i+1, st);
 
             // Backtracking
             swap(in[j], in[i]);
@@ -74,9 +77,23 @@ int32_t main(){
     
     Solution sol;
 
-    // char in[] = { "132" };
-    char in[] = { "123" };
-    sol.permute(in, 0); // 123 132 213 231 321 312
+    char in1[] = { "132" };
+    set<string> st1;
+    sol.permute(in1, 0, st1);
+    PRT(st1); // 123 132 213 231 312 321 
+    cout<<nl;
+
+    char in2[] = { "123" };
+    set<string> st2;
+    sol.permute(in2, 0, st2); // 123 132 213 231 321 312
+    PRT(st2); // 123 132 213 231 312 321
+    cout<<nl;
+
+    char in3[] = { "122" };
+    set<string> st3;
+    sol.permute(in3, 0, st3); // 123 132 213 231 321 312
+    PRT(st3); // 122 212 221
+    cout<<nl;
     
     return 0;
 }
