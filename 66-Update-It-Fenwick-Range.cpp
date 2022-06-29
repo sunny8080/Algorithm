@@ -5,6 +5,7 @@ using namespace std;
 // using namespace __gnu_pbds;
 
 #define ll               long long
+// #define int              long long
 #define ull              unsigned long long
 #define ff               first
 #define ss               second
@@ -36,104 +37,87 @@ using namespace std;
 #define sortvr(x)        sort(x.rbegin(),x.rend())
 #define all(x)           x.begin(), x.end()
 
-const ll cnst = 1e5 + 5;
+const ll N = 1e5 + 5;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // typedef tree< int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> pbds;
 
 void fastIO() {
     ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    //    #ifndef ONLINE_JUDGE
-    //        freopen("input.txt", "r", stdin);
-    //        freopen("output.txt", "w", stdout);
-    //    #endif
+    // #ifndef ONLINE_JUDGE
+    //     freopen("input.txt", "r", stdin);
+    //     freopen("output.txt", "w", stdout);
+    // #endif
 }
+
+
+// Update Range in Fenwick Tree
+// And Query on points
+
+// QUE :- https://www.spoj.com/problems/UPDATEIT/
+// Add value val in range [l ... r]
 
 class Solution {
 
 public:
-
-    // Generate all subsets and print those // no. of non-empty subsets = 2^n - 1 // n= no. of chars in array
-    void generateSubsets(char* in, char* out, int i, int j, int* cnt) {
-        if (in[i] == '\0') {
-            out[j] = '\0';
-            // print only non empty subsets
-            if (j != 0) cout << out << sp;
-            (*cnt)++;
-            return;
+    void buildTree(vi& nums, vi& BIT) {
+        for (int i = 0; i < nums.size(); i++) {
+            updateNode(BIT, i + 1, nums[i]);
         }
-
-        // rec case
-        // include current element
-        out[j] = in[i];
-        generateSubsets(in, out, i + 1, j + 1, cnt);
-
-        // // Exclude the current element
-        generateSubsets(in, out, i + 1, j, cnt);
     }
 
-};
-
-
-
-// Find all subsets
-class Solution2 {
-
-public:
-    void findSubsets(vi& nums, vvi& st, int ind, vi ans) {
-        if (ind == nums.size()) {
-            if (ans.size() != 0) {
-                st.pb(ans);
-            }
-            return;
+    void updateNode(vi& BIT, int ind, int inc) {
+        while (ind < BIT.size()) {
+            BIT[ind] += inc;
+            ind += (ind & (-ind));
         }
+    }
 
-        ans.pb(nums[ind]);
-        findSubsets(nums, st, ind + 1, ans);
-        ans.pop_back();
-        findSubsets(nums, st, ind + 1, ans);
+    int query(vi& BIT, int ind) {
+        int ans = 0;
+        while (ind > 0) {
+            ans += BIT[ind];
+            ind -= (ind & (-ind));
+        }
+        return ans;
+    }
+
+    void updateRange(vi& BIT, int l, int r, int inc) {
+        updateNode(BIT, l, inc);
+        updateNode(BIT, r + 1, -inc);
+    }
+
+    void printPreSum(vi& BIT) {
+        for (int i = 1; i < BIT.size(); i++) {
+            cout << query(BIT, i) << sp;
+        }
+        cout << nl;
     }
 };
 
 int32_t main() {
     fastIO();
-
     Solution sol;
 
-    char arr[] = "ABC";
-    int n = sizeof(arr) / sizeof(arr[0]);
-    // cout<<n<<nl; // 4
-    char ar[n];
-    int cnt = 0;
+    wt(t) {
+        int n, u, l, r, val ; 
+        cin >> n >> u;
+        vi BIT(n + 1, 0);
+        
+        while (u--) {
+            cin >> l >> r >> val;
+            sol.updateRange(BIT, l + 1, r + 1, val);
+        }
 
-    sol.generateSubsets(arr, ar, 0, 0, &cnt); // ABC AB AC A BC B C  
-    cout << "\nNumber of non-empty subsets : " << cnt - 1 << nl; // 7
-    cout<<nl<<nl;
+        // sol.printPreSum(BIT);
 
-
-    vi nums = {1, 3, 2};
-    vi ans;
-    vvi st;
-    Solution2 sol2;
-    sol2.findSubsets(nums, st, 0, ans);
-    cout<<st.size()<<nl;
-    for( auto x : st){
-        PRT(x);
+        wt(q) {
+            int ind; cin >> ind;
+            cout << sol.query(BIT, ind + 1) << nl;
+        }
     }
+
+
 
     return 0;
 }
 
-
-// OUT :-
-// ABC AB AC A BC B C
-// Number of non - empty subsets : 7
-//
-//
-// 7
-// 1 3 2
-// 1 3
-// 1 2
-// 1
-// 3 2
-// 3
-// 2

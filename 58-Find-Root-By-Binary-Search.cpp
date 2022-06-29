@@ -40,100 +40,61 @@ const ll cnst = 1e5 + 5;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 // typedef tree< int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> pbds;
 
-void fastIO() {
+void fastIO(){
     ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    //    #ifndef ONLINE_JUDGE
-    //        freopen("input.txt", "r", stdin);
-    //        freopen("output.txt", "w", stdout);
-    //    #endif
+//    #ifndef ONLINE_JUDGE
+//        freopen("input.txt", "r", stdin);
+//        freopen("output.txt", "w", stdout);
+//    #endif
 }
 
 class Solution {
+    
+    public:
 
-public:
+    // Find square root of n, with precison of p decimal points
+    float squareRoot( int n, int p){    
+        // make a Monotonic Search-space as [l ... r]
+        int l=0;
+        int r = n;
+        float ans = -1;
 
-    // Generate all subsets and print those // no. of non-empty subsets = 2^n - 1 // n= no. of chars in array
-    void generateSubsets(char* in, char* out, int i, int j, int* cnt) {
-        if (in[i] == '\0') {
-            out[j] = '\0';
-            // print only non empty subsets
-            if (j != 0) cout << out << sp;
-            (*cnt)++;
-            return;
-        }
+        while( l<=r ){
+            int mid = (l+r)>>1;
 
-        // rec case
-        // include current element
-        out[j] = in[i];
-        generateSubsets(in, out, i + 1, j + 1, cnt);
-
-        // // Exclude the current element
-        generateSubsets(in, out, i + 1, j, cnt);
-    }
-
-};
-
-
-
-// Find all subsets
-class Solution2 {
-
-public:
-    void findSubsets(vi& nums, vvi& st, int ind, vi ans) {
-        if (ind == nums.size()) {
-            if (ans.size() != 0) {
-                st.pb(ans);
+            if( mid * mid == n ) return mid;
+            else if( mid * mid < n ){
+                ans = mid;
+                l = mid +1;
+            }else{
+                r = mid -1;
             }
-            return;
         }
 
-        ans.pb(nums[ind]);
-        findSubsets(nums, st, ind + 1, ans);
-        ans.pop_back();
-        findSubsets(nums, st, ind + 1, ans);
+        // for Floating point precision use brute force
+        float inc = 0.1;
+        for( int times=1; times<=p; times++){
+            while( ans * ans <= n){
+                ans = ans + inc;
+            }
+            // overshot the value
+            ans = ans - inc;
+            inc = inc / 10;
+        }
+        return ans;
     }
 };
 
-int32_t main() {
+int32_t main(){
     fastIO();
-
     Solution sol;
 
-    char arr[] = "ABC";
-    int n = sizeof(arr) / sizeof(arr[0]);
-    // cout<<n<<nl; // 4
-    char ar[n];
-    int cnt = 0;
-
-    sol.generateSubsets(arr, ar, 0, 0, &cnt); // ABC AB AC A BC B C  
-    cout << "\nNumber of non-empty subsets : " << cnt - 1 << nl; // 7
-    cout<<nl<<nl;
-
-
-    vi nums = {1, 3, 2};
-    vi ans;
-    vvi st;
-    Solution2 sol2;
-    sol2.findSubsets(nums, st, 0, ans);
-    cout<<st.size()<<nl;
-    for( auto x : st){
-        PRT(x);
-    }
-
+    cout<<sol.squareRoot(10, 3)<<nl; // 3.162
+    cout<<sol.squareRoot(16, 3)<<nl; // 4
+    cout<<sol.squareRoot(15, 4)<<nl; // 3.8729
+    
+    
     return 0;
 }
-
-
-// OUT :-
-// ABC AB AC A BC B C
-// Number of non - empty subsets : 7
-//
-//
-// 7
-// 1 3 2
-// 1 3
-// 1 2
-// 1
-// 3 2
-// 3
-// 2
+    
+    
