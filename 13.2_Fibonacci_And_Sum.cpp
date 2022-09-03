@@ -70,11 +70,9 @@ class Solution {
     vector<vector<ll>> pwrMatrix( vector<vector<ll>> A, ll n, ll size ){
         if( n == 1 ) return A;
         if( (n&1) ) return multiplyMatrix( A, pwrMatrix(A, n-1, size), size);
+
         vector<vector<ll>> tmp = pwrMatrix( A, n/2, size);
         return multiplyMatrix( tmp, tmp, size );
-
-
-        return A;
     }
 
     public:
@@ -135,6 +133,9 @@ class Solution {
         return ans;
     }
 
+    // #Method - 2 for fib sum
+    // Go to 13.1_Find_Fibonacci_Modullo.cpp
+
 };
 
 
@@ -155,6 +156,11 @@ int32_t main(){
 
     }
     
+    Solution sol2;
+    cout<<sol2.fib(0+1)<<nl;
+    cout<<sol2.fib(1+1)<<nl;
+    cout<<sol2.fib(2+1)<<nl;
+
     return 0;
 }
     

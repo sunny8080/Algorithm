@@ -59,8 +59,11 @@ ll nCr(int n, int r) {
 }
 
 
+// YT - https://youtu.be/jIb1W3ObIho
 // nCr % p by DP // p is prime
 int nCrModPDp(int n, int r, int p) {
+    if(n<r) return 0;
+    if( (n-r) < r ) r = n-r;
     vi c(r + 1);
     c[0] = 1;
 

@@ -61,24 +61,31 @@ void fastIO()
 // QUE :- https://www.geeksforgeeks.org/chinese-remainder-theorem-set-1-introduction/
 // and :- https://www.geeksforgeeks.org/chinese-remainder-theorem-set-2-implementation/
 
+
+
+// For usage details go to ../Online_practice/01_Spoj_PowPow2
+// QUE Easy :- https://www.spoj.com/problems/POWRTU/  
+// QUE Hard :- https://www.spoj.com/problems/POWPOW2/ 
+// Sol :- https://www.quora.com/How-do-I-solve-Power-with-Combinatorics-HARD-on-SPOJ
+
 class Solution
 {
 
 public:
     // METHOD - 1
     // find Min value of X By hit and trial  // O(M) // M is product of all num
-    int findMinX(vi nums, vi rem){
-        int x=1;
-        while(1){
-            int i=0;
-            for( ; i<nums.size(); i++ ){
-                if( x%nums[i] != rem[i] ){
+    int findMinX(vi nums, vi rem) {
+        int x = 1;
+        while (1) {
+            int i = 0;
+            for (; i < nums.size(); i++) {
+                if (x % nums[i] != rem[i]) {
                     break;
                 }
             }
 
             // If all rem matched then it our ans
-            if( i == nums.size() ){
+            if (i == nums.size()) {
                 return x;
             }
             x++;
@@ -87,48 +94,48 @@ public:
     }
 
 
-    void extendedEuclid( int a, int b, int &x, int &y, int &gcd){
-        if( b == 0 ){
-            x=1, y=0, gcd=a;
+    void extendedEuclid(int a, int b, int& x, int& y, int& gcd) {
+        if (b == 0) {
+            x = 1, y = 0, gcd = a;
             return;
         }
 
-        extendedEuclid(b, a%b, x, y, gcd );
+        extendedEuclid(b, a % b, x, y, gcd);
 
         int cX = y;
-        int cY = x - (a/b)*y;
+        int cY = x - (a / b) * y;
 
-        x = cX, y=cY;
+        x = cX, y = cY;
     }
 
 
-    int modInv( int a, int m ){
-        if( __gcd(a,m) != 1 ) return INT_MAX;
+    int modInv(int a, int m) {
+        if (__gcd(a, m) != 1) return INT_MAX;
 
         int x, y, gcd;
         extendedEuclid(a, m, x, y, gcd);
-        x = (x%m + m)%m;
+        x = (x % m + m) % m;
         return x;
     }
 
 
-    int modInvItr(int a, int m){
-        if( m == 1 ) return 0;
+    int modInvItr(int a, int m) {
+        if (m == 1) return 0;
 
-        int x=1, y=0, m0=m;
+        int x = 1, y = 0, m0 = m;
 
-        while( a > 1 ){
-            int q = a/m;
+        while (a > 1) {
+            int q = a / m;
 
             // RHH = gcd(a, m) = gcd(m, a%m)
-            tie(a, m) = make_pair(m, a%m);
+            tie(a, m) = make_pair(m, a % m);
 
             // Update x and y
-            tie(x,y) = make_pair(y, x-q*y);
+            tie(x, y) = make_pair(y, x - q * y);
         }
 
         // Make +ve if x is -ve
-        x = (x%m0 + m0)%m0;
+        x = (x % m0 + m0) % m0;
 
         return x;
     }
@@ -165,14 +172,14 @@ int32_t main()
 
     Solution sol;
 
-    cout << sol.findMinX({3, 4, 5}, {2, 3, 1}) << nl; // 11 
-    cout << sol.findMinX({3, 4, 5}, {2, 2, 1}) << nl; // 26
-    cout << sol.findMinX({2, 3, 7}, {1, 0, 5}) << nl; // 33
-    cout<<nl;
+    cout << sol.findMinX({ 3, 4, 5 }, { 2, 3, 1 }) << nl; // 11 
+    cout << sol.findMinX({ 3, 4, 5 }, { 2, 2, 1 }) << nl; // 26
+    cout << sol.findMinX({ 2, 3, 7 }, { 1, 0, 5 }) << nl; // 33
+    cout << nl;
 
-    cout << sol.findMinXByCRT({3, 4, 5}, {2, 3, 1}) << nl; // 11 
-    cout << sol.findMinXByCRT({3, 4, 5}, {2, 2, 1}) << nl; // 26
-    cout << sol.findMinXByCRT({2, 3, 7}, {1, 0, 5}) << nl; // 33
+    cout << sol.findMinXByCRT({ 3, 4, 5 }, { 2, 3, 1 }) << nl; // 11 
+    cout << sol.findMinXByCRT({ 3, 4, 5 }, { 2, 2, 1 }) << nl; // 26
+    cout << sol.findMinXByCRT({ 2, 3, 7 }, { 1, 0, 5 }) << nl; // 33
 
     return 0;
 }

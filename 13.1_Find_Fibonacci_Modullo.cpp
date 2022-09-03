@@ -64,7 +64,7 @@ int fib( int n ){
 }
 
 // To find sum of first N Fibonacci numbers
-class solution{
+class Solution{
     vector<vector<int>> multiply( vector<vector<int>> &a, vector<vector<int>> &b ){
         int sz = a.size();
         vector<vector<int>> ans( sz, vector<int>(sz,0));
@@ -77,7 +77,7 @@ class solution{
         }
         return ans;
     }
-    public:
+
     vector<vector<int>> matrixExponentiate( vector<vector<int>> &a, int n ){
         if( n == 0 ){
             int sz =  a.size();
@@ -97,6 +97,24 @@ class solution{
             ans = multiply(ans,a);
         }
         return ans;
+    }
+    public:
+
+    int fibSum(int n){
+        vector<vector<int>> a(3, vector<int>(3, 0));
+        a[0][0] = a[0][1] = a[0][2] = 1;
+        a[1][1] = a[1][2] = 1;
+        a[2][1] = 1;
+
+        vector<vector<int>> ans = matrixExponentiate(a, n);
+        cout<<nl;
+        for (auto i : ans) {
+            for (auto j : i)
+                cout << j << " ";
+            cout << nl;
+        }
+        int sum = ans[0][2];
+        return sum;
     }
 
 };
@@ -133,20 +151,10 @@ int32_t main(){
 
 
     // Find Sum of First N Fibonacci
-    int n;  cin>>n;
-    vector<vector<int>> a(3, vector<int>(3,0) );
-    a[0][0] = a[0][1] = a[0][2] = 1;
-    a[1][1] = a[1][2] = 1;
-    a[2][1] = 1;
-
-    solution sol;
-    vector<vector<int>> ans = sol.matrixExponentiate(a,n);
-    for( auto i : ans ){    
-        for( auto j : i )
-            cout<<j<<" ";
-        cout<<nl;
-    }
-    int sum = ans[0][2 ];
+    int n=7;  
+    //cin>>n;
+    Solution sol;
+    int sum = sol.fibSum(n);
     cout<<"Sum of First "<<n<<" Fibonacci no. : "<<sum<<nl;
     cout<<nl<<nl;
 
@@ -170,11 +178,19 @@ int32_t main(){
 }
 
 // For Sum of first 7 Fibo no.
-// 7
 // 1 53 33 
 // 0 21 13 
 // 0 13 8 
 // Sum of First 7 Fibonacci no. : 33
+
+// 0
+// 8
+// 610
+// 572375539
+// 62791945
+// 822963728
+
+
 
 // Identity Matrix for Sum of Fibonacci no.
 // | 1 1 1 |

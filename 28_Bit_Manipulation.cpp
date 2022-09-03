@@ -205,7 +205,7 @@ void uniqueNo3( vector<int> &arr ){
 }
 
 // Fast Exponentiation / power using bit masking ( O(logN) when N is power of a )
-    ll findPwr( ll a, ll n ){
+ll findPwr( ll a, ll n ){
         ll ans=1;
         while( n ){
             int last_bit = (n&1);

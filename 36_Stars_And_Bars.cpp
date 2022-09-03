@@ -50,6 +50,9 @@ void fastIO(){
 
 
 // Stars and Bars
+// YT :- https://www.youtube.com/watch?v=UTCScjoPymA&ab_channel=Numberphile
+
+
 // QUE :- Question Discussed Here
 // https://www.spoj.com/problems/MARBLES/
 

@@ -151,7 +151,8 @@ public:
         return ans;
     }
 
-    // Bubble Sort
+    // Bubble Sort 
+    // here you can assume n is no of unsorted elements (from start) 
     void bubbleSort(int arr[], int n) {
         if (n == 1) return;
         for (int j = 0; j < n - 1; j++) {
@@ -246,7 +247,7 @@ public:
                 swap(arr[i], arr[j]);
             }
         }
-        // place the oivot element in the correct index
+        // place the pivot element in the correct index
         i++;
         swap(arr[i], arr[r]);
         return i; // index of pivot
