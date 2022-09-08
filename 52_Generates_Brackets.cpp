@@ -52,6 +52,7 @@ class Solution {
 
 public:
     // Generate Balanced Brackets using N pairs of Round Brackets
+    // No. of such pairs - 2nCn/(n+1) - Catalan no.
     void generateBrackets(char* bracket, int ind, int n, int open, int close, int* cnt) {
         // base case // all 2*n spaces is filled 
         if (ind == 2 * n) {
