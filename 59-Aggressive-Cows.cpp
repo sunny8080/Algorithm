@@ -51,10 +51,9 @@ void fastIO() {
 
 
 // We have used, Monotonic Search Space
+// Aggressive Cows
 // QUE :- https://www.spoj.com/problems/AGGRCOW/
 // Soln :- https://www.youtube.com/watch?v=wSOfYesTBRk
-
-
 
 class Solution {
     bool canPlaceCows(vi& stalls, int cows, int min_step) {
@@ -90,6 +89,9 @@ public:
         return ans;
     }
 };
+
+
+
 
 
 
@@ -138,6 +140,9 @@ public:
 
 };
 
+
+
+
 int32_t main() {
     fastIO();
     Solution sol;
@@ -174,7 +179,6 @@ int32_t main() {
         cout << sol2.findPage(nums, m) << nl; // 60
         cout<<nl;
     }
-
 
 
     return 0;

@@ -50,7 +50,7 @@ void fastIO() {
 }
 
 
-// Inversion Count using Merge Sort  // METHOD - 1
+// Inversion Count using Merge Sort  // METHOD - 1 // O(NlogN)  
 // QUE  :- https://www.spoj.com/problems/INVCNT/	
 // soln :- https://www.geeksforgeeks.org/counting-inversions/
 
@@ -102,7 +102,7 @@ public:
 
 
 
-// Inversion Count by Fenwick Tree  // METHOD - 2
+// Inversion Count by Fenwick Tree  // METHOD - 2 // O(NlogN)
 vi BIT(N);
 
 class Solution2 {

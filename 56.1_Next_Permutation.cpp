@@ -4,6 +4,7 @@ using namespace std;
 #define wt(x) int x; cin>>x; while( x-- )
 
 // find next permutation of given arr
+// YT - https://www.youtube.com/watch?v=LuLCLgMElus&list=TLPQMDgwOTIwMjIhMyJo4RzDxQ&index=3&ab_channel=takeUforward
 class Solution1 {
 public:
     // void Next_permutation( vector<int> &arr ){
@@ -42,7 +43,16 @@ public:
 
 
 
+
+
+
+
+
+
+
+
 // to find kth Permutation arr[ 1, 2, 3, ..., n ]
+// Yt - https://youtu.be/W9SIlE2jhBQ
 class Solution21 {
     vector<int> fact, digits;
     void solve(string& ans, int n, int k) {
@@ -76,7 +86,20 @@ public:
     // ans = "123"
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
 // to find kth Permutation arr[ 1, 2, 3, ..., n ]// Best Approach 
+// YT - https://www.youtube.com/watch?v=wT7gcXLYoao&list=TLPQMDgwOTIwMjIhMyJo4RzDxQ&index=4&ab_channel=takeUforward
 class Solution22 {
 public:
     string getPermutation(int n, int k) {
@@ -103,6 +126,13 @@ public:
     // n = 4, k = 9   // "2314"
     // n = 3, k = 3   // "213"
 };
+
+
+
+
+
+
+
 
 
 
@@ -140,7 +170,15 @@ public:
     }
 };
 
+
+
+
+
+
+
+
 // find all permutation of a array and return it // Better approach
+// YT - https://www.youtube.com/watch?v=YK78FU5Ffjw&ab_channel=takeUforward
 class Solution32 {
     void solve(vector<int>& ds, vector<int>& nums, vector<vector<int>>& ans, int freq[]) {
         if (ds.size() == nums.size()) {
@@ -151,7 +189,9 @@ class Solution32 {
             if (!freq[i]) {
                 freq[i] = 1;
                 ds.push_back(nums[i]);
+
                 solve(ds, nums, ans, freq);
+
                 freq[i] = 0;
                 ds.pop_back();
             }
@@ -170,7 +210,14 @@ public:
     }
 };
 
+
+
+
+
+
+
 // find all permutation of a array and return it // Best approach
+// YT - https://www.youtube.com/watch?v=f2ic2Rsc9pU&list=TLPQMDgwOTIwMjIhMyJo4RzDxQ&index=2&ab_channel=takeUforward
 class Solution33 {
     void solve(int ind, vector<int>& nums, vector<vector<int>>& ans) {
         if (ind == nums.size()) {
@@ -191,6 +238,13 @@ public:
         return ans;
     }
 };
+
+
+
+
+
+
+
 
 
 // find all permutation of a string and return it // chars can be duplicate // duplicates permutation not allowed // must size(str) <= 9

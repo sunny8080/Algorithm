@@ -118,6 +118,7 @@ class Solution {
 
     // METHOD :- 2
     // print all possible configuration by using bitset // here we r using vector instead of bitset array
+    // https://www.youtube.com/watch?v=i05Ju7AftcM&ab_channel=takeUforward
     void solve2(int col, vi& leftRow, vi& upperDiagonal, vi& lowerDiagonal, vector<string>& board, vector<vector<string>>& ans, int n) {
         if (col == n) {
             ans.push_back(board);
@@ -182,22 +183,22 @@ public:
 
 
 
-        // vector<vector<string>> ans;
-        // string s(n, '.');
-        // vector<string> board(n, s);
-        // vector<int> leftrow(n, 0), upperDiagonal(2 * n - 1, 0), lowerDiagonal(2 * n - 1, 0);
-        // solve2(0, leftrow, upperDiagonal, lowerDiagonal, board, ans, n);
-        // return ans;
-
-
         vector<vector<string>> ans;
         string s(n, '.');
         vector<string> board(n, s);
-        int DONE = ((1 << n) - 1); // Binary of DONE is  [1 .... 1 ] // here 1 is n times
-        int cnt = 0;
-        solve3(0, 0, 0, 0, n, board, ans, DONE, cnt);
-        cout << "No. of possible solution : " << cnt << nl;
+        vector<int> leftrow(n, 0), upperDiagonal(2 * n - 1, 0), lowerDiagonal(2 * n - 1, 0);
+        solve2(0, leftrow, upperDiagonal, lowerDiagonal, board, ans, n);
         return ans;
+
+
+        // vector<vector<string>> ans;
+        // string s(n, '.');
+        // vector<string> board(n, s);
+        // int DONE = ((1 << n) - 1); // Binary of DONE is  [1 .... 1 ] // here 1 is n times
+        // int cnt = 0;
+        // solve3(0, 0, 0, 0, n, board, ans, DONE, cnt);
+        // cout << "No. of possible solution : " << cnt << nl;
+        // return ans;
     }
 };
 

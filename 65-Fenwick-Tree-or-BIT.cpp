@@ -52,13 +52,13 @@ void fastIO() {
 
 // Fenwick Tree or BIT (Binary Indexed Tree)
 // In BIT , BIT array is in 1-based indexing manner
-// So BIT[i] stores ans in range [l, r] // l=1-2^p -1, r=1  // p=position of rightmost set bit in i
+// So BIT[i] stores ans in range [l, r] // l=1-2^p -1, r=i  // p=position of rightmost set bit in i
 // To moving forward :-  i = i + (i&(-i))    // to <=n
 // To moving backward :-  i = i - (i&(-i))   // to > 0
 
 
 // QUE here :- An array is given, query and update is also given
-// Query :- find sum in [1 ... r] 
+// Query :- find sum in [1 ... i] 
 
 class Solution {
 
