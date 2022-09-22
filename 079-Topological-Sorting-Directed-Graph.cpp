@@ -85,6 +85,7 @@ public:
             vis[x.first] = 0;
         }
 
+        // in case when graph is disconnected
         for (auto x : ls) {
             if (!vis[x.first]) {
                 dfsHelper(x.first, vis, ordering);
@@ -118,7 +119,7 @@ public:
 
         for (auto x : ls) {
             // update indegree by traversing edges x->y
-            // indegree[x] += 1
+            // indegree[y] += 1
             for (auto y : ls[x.first]) {
                 indegree[y]++;
             }
@@ -148,7 +149,6 @@ public:
         for( auto x : ordering ){
             cout<<x<<nl;
         }
-
     }
 
 };

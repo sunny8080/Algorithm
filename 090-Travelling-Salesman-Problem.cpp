@@ -16,6 +16,7 @@ using namespace std;
 #define vll              vector<ll> 
 #define vvi              vector< vector<int>>
 #define vvll             vector< vector<ll>>
+#define vpii             vector<pair<int,int>>
 #define mii              map<int,int>
 #define pqb              priority_queue<int>
 #define pqs              priority_queue<int, vector<int>, greater<int>>
@@ -36,6 +37,7 @@ using namespace std;
 #define sortv(x)         sort(x.begin(),x.end())
 #define sortvr(x)        sort(x.rbegin(),x.rend())
 #define all(x)           x.begin(), x.end()
+#define int_max 999999
 
 const ll N = 1e5 + 5;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
@@ -50,44 +52,34 @@ void fastIO() {
 }
 
 
+// Travelling Salesman Problem
+// QUE : https://www.geeksforgeeks.org/travelling-salesman-problem-set-1/
+// Soln : https://www.youtube.com/watch?v=JE0JE8ce1V0&t=335s
+
 
 class Solution {
 
 public:
-    void addEdge(int u, int v, vi adj[]) {
-        adj[u].push_back(v);
-        adj[v].push_back(u);
-    }
+    int tsp(int mask, int pos, int dist[100][100], int dp[100][100], int n) {
+        // if all cities have been visited // mask = (111 ... 111) -> ((1<<n)-1)
+        if (mask == ((1 << n) - 1)) {
+            return dist[pos][0]; // becoz we started from 0
+        }
 
+        if (dp[mask][pos] != -1) return dp[mask][pos];
 
-    bool dfsHelper(int node, vi adj[], vi& vis, int parent, int currColor) {
-        vis[node] = currColor; // 1 or 2, both mean visited
-
-        for (auto nbr : adj[node]) {
-            if (vis[nbr] == 0) {
-                bool isBartite = dfsHelper(nbr, adj, vis, node, 3 - currColor);
-                if (isBartite == false) return false;
-
-            } else if (nbr != parent and currColor == vis[nbr]) {
-                return false;
+        int ans = int_max; // user defined int_max
+        for (int city = 0; city < n; city++) {
+            // go to unvisited city
+            if ((mask & (1 << city)) == 0) {
+                int tmp = dist[pos][city] + tsp(mask | (1 << city), city, dist, dp, n);
+                ans = min(ans, tmp);
             }
         }
-        return true;
+        return dp[mask][pos] = ans;
     }
 
-    bool checkBipartite(int n, vi adj[]) {
-        vi vis(n, 0); // 0 - not visited, 1 - visited color is 1, 2 - visited color is 2 
-        bool isBartite = dfsHelper(0, adj, vis, -1, 1);
-
-        if (isBartite) {
-            for (int i = 0; i < n; i++) {
-                cout << i << " - node color - " << vis[i] << nl;
-            }
-        }
-        return isBartite;
-    }
 };
-
 
 
 
@@ -95,56 +87,25 @@ int32_t main() {
     fastIO();
     Solution sol;
 
-    int n = 5;
-    vector<int> adj[n];
-    sol.addEdge(0, 1, adj);
-    sol.addEdge(1, 2, adj);
-    sol.addEdge(2, 3, adj);
-    sol.addEdge(3, 4, adj);
-    sol.addEdge(4, 0, adj);
-
-    bool isBartite = sol.checkBipartite(n, adj);
-    if (isBartite) {
-        cout << "Graph is bartite" << nl;
-    } else {
-        cout << "Graph is not bartite" << nl;
-    }
-    cout << nl << nl;
+    int n = 4;
+    int dist[100][100] = { {0, 20, 42, 25},
+                            {20, 0, 30, 34},
+                            {42, 30, 0, 10},
+                            {25, 34, 10, 0}
+    };
 
 
+    int dp[1000][100];
+    memset(dp, -1, sizeof(dp));
 
-    int n1 = 5;
-    vector<int> adj1[n1];
-    sol.addEdge(0, 1, adj1);
-    sol.addEdge(1, 2, adj1);
-    sol.addEdge(2, 3, adj1);
-    sol.addEdge(3, 4, adj1);
+    int ans = sol.tsp(1, 0, dist, dp, n);
+    cout << "Min wt hamiltonian path costs (TSP) : " << ans << nl; // 85
 
-    bool isBartite1 = sol.checkBipartite(n1, adj1);
-    if (isBartite1) {
-        cout << "Graph is bartite" << nl;
-    } else {
-        cout << "Graph is not bartite" << nl;
-    }
 
     return 0;
 }
 
 
-
-// OUTPUT :-
+// OUT :-
 //
-// 0 - node color - 1
-// 1 - node color - 2
-// 2 - node color - 1
-// 3 - node color - 2
-// 4 - node color - 1
-// Graph is not bartite
-//
-//
-// 0 - node color - 1
-// 1 - node color - 2
-// 2 - node color - 1
-// 3 - node color - 2
-// 4 - node color - 1
-// Graph is bartite
+// Min wt hamiltonian path costs(TSP) : 85

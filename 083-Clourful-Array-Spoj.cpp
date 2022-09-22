@@ -16,6 +16,7 @@ using namespace std;
 #define vll              vector<ll> 
 #define vvi              vector< vector<int>>
 #define vvll             vector< vector<ll>>
+#define vpii             vector<pair<int,int>>
 #define mii              map<int,int>
 #define pqb              priority_queue<int>
 #define pqs              priority_queue<int, vector<int>, greater<int>>
@@ -49,45 +50,55 @@ void fastIO() {
     // #endif
 }
 
-
+// QUE :- https://www.spoj.com/problems/CLFLARR/
+// DSU used
 
 class Solution {
-
+    vi par;
 public:
-    void addEdge(int u, int v, vi adj[]) {
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+    void init(int n) {
+        par.resize(n);
+
+        // initiate par[x] = x
+        iota(all(par), 0);
+    }
+
+    int getParent(int i) {
+        return (i == par[i]) ? i : (par[i] = getParent(par[i]));
+    }
+
+    void unite(int x, int y) {
+        x = getParent(x);
+        y = getParent(y);
+
+        if (x != y) {
+            par[x] = max(par[x], par[y]);
+            // par[y] = max(par[x], par[y]);
+        }
     }
 
 
-    bool dfsHelper(int node, vi adj[], vi& vis, int parent, int currColor) {
-        vis[node] = currColor; // 1 or 2, both mean visited
+    void solve(int n, int q, vi& l, vi& r, vi& c) {
+        init(n + 2);
+        vi res(n + 2, 0);
 
-        for (auto nbr : adj[node]) {
-            if (vis[nbr] == 0) {
-                bool isBartite = dfsHelper(nbr, adj, vis, node, 3 - currColor);
-                if (isBartite == false) return false;
+        for (int i = l.size() - 1; i >= 0; i--) {
+            // ind -> rightmost non coloured index
+            int ind = getParent(l[i]);
 
-            } else if (nbr != parent and currColor == vis[nbr]) {
-                return false;
+            while (ind <= r[i]) {
+                res[ind] = c[i];
+                unite(ind, ind + 1);
+                ind = getParent(ind);
             }
         }
-        return true;
-    }
 
-    bool checkBipartite(int n, vi adj[]) {
-        vi vis(n, 0); // 0 - not visited, 1 - visited color is 1, 2 - visited color is 2 
-        bool isBartite = dfsHelper(0, adj, vis, -1, 1);
-
-        if (isBartite) {
-            for (int i = 0; i < n; i++) {
-                cout << i << " - node color - " << vis[i] << nl;
-            }
+        for (int i = 1; i <= n; i++) {
+            cout << res[i] << nl;
         }
-        return isBartite;
     }
+
 };
-
 
 
 
@@ -95,56 +106,18 @@ int32_t main() {
     fastIO();
     Solution sol;
 
-    int n = 5;
-    vector<int> adj[n];
-    sol.addEdge(0, 1, adj);
-    sol.addEdge(1, 2, adj);
-    sol.addEdge(2, 3, adj);
-    sol.addEdge(3, 4, adj);
-    sol.addEdge(4, 0, adj);
-
-    bool isBartite = sol.checkBipartite(n, adj);
-    if (isBartite) {
-        cout << "Graph is bartite" << nl;
-    } else {
-        cout << "Graph is not bartite" << nl;
+    int n, q; cin >> n >> q;
+    vi l(q), r(q), c(q);
+    for (int i = 0; i < q; i++) {
+        cin >> l[i] >> r[i] >> c[i];
     }
-    cout << nl << nl;
+
+    sol.solve(n, q, l, r, c);
 
 
 
-    int n1 = 5;
-    vector<int> adj1[n1];
-    sol.addEdge(0, 1, adj1);
-    sol.addEdge(1, 2, adj1);
-    sol.addEdge(2, 3, adj1);
-    sol.addEdge(3, 4, adj1);
 
-    bool isBartite1 = sol.checkBipartite(n1, adj1);
-    if (isBartite1) {
-        cout << "Graph is bartite" << nl;
-    } else {
-        cout << "Graph is not bartite" << nl;
-    }
 
     return 0;
 }
 
-
-
-// OUTPUT :-
-//
-// 0 - node color - 1
-// 1 - node color - 2
-// 2 - node color - 1
-// 3 - node color - 2
-// 4 - node color - 1
-// Graph is not bartite
-//
-//
-// 0 - node color - 1
-// 1 - node color - 2
-// 2 - node color - 1
-// 3 - node color - 2
-// 4 - node color - 1
-// Graph is bartite

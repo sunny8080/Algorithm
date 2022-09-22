@@ -49,6 +49,8 @@ void fastIO() {
     // #endif
 }
 
+// Kosaraju's Algorithm
+// It is used to print all strongly connected component
 
 
 class Graph {
@@ -62,7 +64,8 @@ class Graph {
             }
         }
 
-        // add to stack when fun call is complete
+        // add vertex a/c to their finish time
+        // add to stack when fun call is complete // add when all its nbr is visited
         stk.push_back(node);
     }
 
@@ -79,6 +82,8 @@ class Graph {
 public:
     void addEdge(vvi& adj, vvi& revAdj, int u, int v) {
         adj[u].push_back(v);
+
+        // add edge in reverse graph
         revAdj[v].push_back(u);
     }
 
@@ -88,12 +93,14 @@ public:
         vi vis(n, 0);
         vi stk;
 
+        // may be graph is not connected
         for (int i = 0; i < n; i++) {
             if (!vis[i]) {
                 dfs1(i, adj, vis, stk);
             }
         }
 
+        // PRT(stk);
 
         // step 2 : reverse the graph [ we have already revAdj]
 
