@@ -16,6 +16,7 @@ using namespace std;
 #define vll              vector<ll> 
 #define vvi              vector< vector<int>>
 #define vvll             vector< vector<ll>>
+#define vpii             vector<pair<int,int>>
 #define mii              map<int,int>
 #define pqb              priority_queue<int>
 #define pqs              priority_queue<int, vector<int>, greater<int>>
@@ -49,112 +50,99 @@ void fastIO() {
     // #endif
 }
 
-// Kosaraju's Algorithm
-// It is used to print all strongly connected component
+// find articulation point in a graph
 
+class Solution {
 
-class Graph {
-
-    void dfs1(int node, vvi& adj, vi& vis, vi& stk) {
+    void dfs(int node, int parent, vi& vis, vi& tin, vi& low, int& timer, vvi& adj, vi& isArtPoint) {
         vis[node] = 1;
+        tin[node] = low[node] = timer++;
+        int child = 0;
 
         for (auto nbr : adj[node]) {
+            if (nbr == parent) continue;
+
             if (!vis[nbr]) {
-                dfs1(nbr, adj, vis, stk);
+                child++;
+                dfs(nbr, node, vis, tin, low, timer, adj, isArtPoint);
+                low[node] = min(low[node], low[nbr]);
+
+                // condition for articulation point in graph
+                if (low[nbr] >= tin[node] && (parent != -1)) {
+                    isArtPoint[node] = 1;
+                }
+            } else {
+                low[node] = min(low[node], tin[nbr]);
             }
         }
 
-        // add vertex a/c to their finish time
-        // add to stack when fun call is complete // add when all its nbr is visited
-        stk.push_back(node);
-    }
-
-    void dfs2(int node, vvi& adj, vi& vis, vi& nums) {
-        vis[node] = 1;
-        nums.push_back(node);
-        for (auto nbr : adj[node]) {
-            if (!vis[nbr]) {
-                dfs2(nbr, adj, vis, nums);
-            }
+        if (parent == -1 && child > 1) {
+            isArtPoint[node] = 1;
         }
     }
+
 
 public:
     void addEdge(vvi& adj, int u, int v) {
         adj[u].push_back(v);
+        adj[v].push_back(u);
     }
 
-    void printStronglyConnectedComponent(int n, vvi& adj) {
-        // step 1 : store the vertices acc to dfs finish time // means topological sorting
-        // ordering : stack 
-        vi vis(n, 0);
-        vi stk;
 
-        // may be graph is not connected
+    void findArticulationPoint(vvi& adj, int n) {
+        vi tin(n, -1);
+        vi low(n, -1);
+        vi vis(n, 0);
+        vector<int> isArtPoint(n, 0);
+        int timer = 0;
+
         for (int i = 0; i < n; i++) {
             if (!vis[i]) {
-                dfs1(i, adj, vis, stk);
-            }
-        }
-        // PRT(stk);
-
-        // step 2 : reverse or transpose the graph 
-        vvi revAdj(n);
-        for( int i=0; i<n; i++ ){
-            for( auto j : adj[i] ){
-                revAdj[j].push_back(i);
+                dfs(i, -1, vis, tin, low, timer, adj, isArtPoint);
             }
         }
 
-        // step 3 : do dfs acc ordering given in the stack in reversed graph, from last to first
-        char component = 'A';
-        vis.assign(n, 0);
-        for (int i = n - 1; i >= 0; i--) {
-            int node = stk[i];
-            if (!vis[node]) {
-                vi nums;
-                dfs2(node, revAdj, vis, nums);
-
-                cout << "Component " << component << " : ";
-                PRT(nums);
-                component++;
-            }
+        cout << "Articulation point : ";
+        for (int i = 0; i < n; i++) {
+            if (isArtPoint[i])
+                cout << i << sp;
         }
-
+        cout << nl;
     }
+
+
 };
-
-
 
 int32_t main() {
     fastIO();
+    Solution sol;
 
     {
-        int n = 7;
-        Graph g;
+        Solution sol;
+        int n = 12;
         vvi adj(n);
+        sol.addEdge(adj, 0, 1);
+        sol.addEdge(adj, 1, 2);
+        sol.addEdge(adj, 2, 3);
+        sol.addEdge(adj, 3, 0);
+        sol.addEdge(adj, 3, 4);
+        sol.addEdge(adj, 4, 5);
+        sol.addEdge(adj, 5, 8);
+        sol.addEdge(adj, 5, 6);
+        sol.addEdge(adj, 6, 7);
+        sol.addEdge(adj, 8, 7);
+        sol.addEdge(adj, 7, 9);
+        sol.addEdge(adj, 9, 10);
+        sol.addEdge(adj, 10, 11);
+        sol.addEdge(adj, 11, 9);
 
-        g.addEdge(adj, 0, 2);
-        g.addEdge(adj, 2, 1);
-        g.addEdge(adj, 1, 0);
-        g.addEdge(adj, 0, 3);
-        g.addEdge(adj, 3, 5);
-        g.addEdge(adj, 5, 6);
-        g.addEdge(adj, 6, 3);
-        g.addEdge(adj, 3, 4);
-
-        g.printStronglyConnectedComponent(n, adj);
+        sol.findArticulationPoint(adj, n);
     }
-    
-
-
+    cout << nl;
 
     return 0;
 }
 
-// OUT:-
+// OUT :-
 //
-// Component A : 0 1 2
-// Component B : 3 6 5
-// Component C : 4
-
+// Articulation point : 3 4 5 7 9

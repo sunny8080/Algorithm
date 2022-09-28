@@ -52,7 +52,8 @@ void fastIO() {
 
 
 // Floyd Warshall Algorithm
-// It is used to find All pair shortest path distance
+// It is used to find All pair shortest path distance (APSP)
+// Multiple Source shortest path 
 
 // O(N^3) time // N -no. of vertices
 // O(N^2) space

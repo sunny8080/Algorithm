@@ -49,9 +49,60 @@ void fastIO() {
     // #endif
 }
 
+// Detect cycle in undirected graph by BFS
+// 0-based
+class Solution1 {
+
+public:
+    void addEdge(vvi& adj, int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
 
 
-class Graph {
+    bool checkForCycle(int node, vvi& adj, vi& vis) {
+        queue<pair<int, int>> q;
+        int par = -1;
+
+        vis[node] = 1;
+        q.push({ node, par });
+
+        while (!q.empty()) {
+            tie(node, par) = q.front();
+            q.pop();
+
+            for( auto nbr : adj[node]){
+                if( !vis[nbr] ){
+                    vis[nbr] = 1;
+                    q.push({nbr, par});
+                }else if( nbr != par ){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool isCycle(int n, vector<vector<int>>& adj) {
+        vector<int> vis(n, 0);
+
+        // Graph may be disconnected
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                if (checkForCycle(i, adj, vis)) return true;
+            }
+        }
+        return false;
+    }
+};
+
+
+
+
+
+// Detect cycle in undirected graph by DFS
+// 0-based
+class Solution2 {
 
 public:
     void addEdge(vvi& adj, int u, int v) {
@@ -86,36 +137,67 @@ public:
 
 
 
+
+
 int32_t main() {
     fastIO();
 
-    Graph g;
-    int n = 5;
-    vector<vector<int>> adj(5);
-    g.addEdge(adj, 0, 1);
-    g.addEdge(adj, 1, 2);
-    g.addEdge(adj, 2, 3);
-    g.addEdge(adj, 3, 4);
-    g.addEdge(adj, 1, 3);
+    {
+        Solution1 sol1;
+        int n =11;
+        vector<vector<int>> adj(n);
+        sol1.addEdge(adj, 0, 1);
+        sol1.addEdge(adj, 1, 3);
 
-    bool cycleFound = g.cycleDetector(n, adj);
-    if (cycleFound) cout << "Cycle found" << nl;
-    else cout << "Cycle not found" << nl;
+        sol1.addEdge(adj, 2, 4);
+        sol1.addEdge(adj, 4, 5);
+        sol1.addEdge(adj, 5, 6);
+        sol1.addEdge(adj, 6, 7);
+        sol1.addEdge(adj, 4, 9);
+        sol1.addEdge(adj, 9, 8);
+        sol1.addEdge(adj, 8, 7);
+        sol1.addEdge(adj, 7, 10);
+
+        bool cycleFound = sol1.isCycle(n, adj);
+        if (cycleFound) cout << "Cycle found" << nl; // Cycle found
+        else cout << "Cycle not found" << nl;
+    }
+    cout<<nl;
+
+
+    {
+        Solution2 g;
+        int n = 5;
+        vector<vector<int>> adj(5);
+        g.addEdge(adj, 0, 1);
+        g.addEdge(adj, 1, 2);
+        g.addEdge(adj, 2, 3);
+        g.addEdge(adj, 3, 4);
+        g.addEdge(adj, 1, 3);
+
+        bool cycleFound = g.cycleDetector(n, adj);
+        if (cycleFound) cout << "Cycle found" << nl; // Cycle found
+        else cout << "Cycle not found" << nl;
+    }
+    cout << nl;
 
 
 
 
-    Graph g1;
-    int n1 = 5;
-    vector<vector<int>> adj1(5);
-    g1.addEdge(adj, 0, 1);
-    g1.addEdge(adj, 1, 2);
-    g1.addEdge(adj, 2, 3);
-    g1.addEdge(adj, 3, 4);
+    {
+        Solution2 g;
+        int n = 5;
+        vector<vector<int>> adj(5);
+        g.addEdge(adj, 0, 1);
+        g.addEdge(adj, 1, 2);
+        g.addEdge(adj, 2, 3);
+        g.addEdge(adj, 3, 4);
 
-    bool cycleFound1 = g1.cycleDetector(n1, adj1);
-    if (cycleFound1) cout << "Cycle found" << nl;
-    else cout << "Cycle not found" << nl;
+        bool cycleFound1 = g.cycleDetector(n, adj);
+        if (cycleFound1) cout << "Cycle found" << nl;
+        else cout << "Cycle not found" << nl;  // Cycle not found
+    }
+
 
 
     return 0;

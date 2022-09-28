@@ -53,7 +53,7 @@ void fastIO() {
 
 // Check cycle is present or not in directed graph
 // DFS used
-class Graph {
+class Solution {
     bool cycleHelper(int node, vvi& adj, vi& vis, vi& stk) {
         // marked node as visited and add it to stack
         vis[node] = 1;
@@ -84,36 +84,123 @@ public:
     }
 
 
-
     bool cycleFound(int n, vvi& adj) {
         vi vis(n, 0);
         vi stk(n, 0);
-        return cycleHelper(0, adj, vis, stk);
+
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                if (cycleHelper(i, adj, vis, stk)) return true;
+            }
+        }
+
+        return false;
     }
 };
 
 
 
+
+
+// Cycle detection by BFS
+// Using reverse of Kahn's Algo (Used in topological sorting)
+class Solution2 {
+
+public:
+    void addEdge(vvi& adj, int u, int v, bool directed = true) {
+        adj[u].push_back(v);
+        if (!directed) {
+            adj[v].push_back(u);
+        }
+    }
+
+    bool isCyclic(int n, vvi& adj) {
+        queue<int> q;
+        vi indegree(n, 0);
+        for (auto x : adj) {
+            for (auto y : x) {
+                indegree[y]++;
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                q.push(i);
+            }
+        }
+
+        int cnt = 0;
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+
+            cnt++;
+            for (auto nbr : adj[node]) {
+                indegree[nbr]--;
+                if (indegree[nbr] == 0) {
+                    q.push(nbr);
+                }
+            }
+        }
+
+        // if we can generate topological sorting then there is no cycle
+        // in topological sorting, there is always n nodes
+        if (cnt == n) return false;
+        return true;
+    }
+};
+
+
 int32_t main() {
     fastIO();
-    Graph g;
 
-    int n = 7;
-    vvi adj(n);
-    g.addEdge(adj, 0, 1);
-    g.addEdge(adj, 1, 2);
-    g.addEdge(adj, 2, 3);
-    g.addEdge(adj, 3, 4);
-    g.addEdge(adj, 4, 5);
-    g.addEdge(adj, 5, 6);
-    g.addEdge(adj, 1, 5);
-    g.addEdge(adj, 4, 2);
-    auto isCycle = g.cycleFound(n, adj);
-    if (isCycle) {
-        cout << "Cycle found";
-    } else {
-        cout << "Cycle not found";
+
+    {
+        Solution g;
+
+        int n = 7;
+        vvi adj(n);
+        g.addEdge(adj, 0, 1);
+        g.addEdge(adj, 1, 2);
+        g.addEdge(adj, 2, 3);
+        g.addEdge(adj, 3, 4);
+        g.addEdge(adj, 4, 5);
+        g.addEdge(adj, 5, 6);
+        g.addEdge(adj, 1, 5);
+        g.addEdge(adj, 4, 2);
+        auto isCycle = g.cycleFound(n, adj);
+        if (isCycle) {
+            cout << "Cycle found"; // Cycle found
+        } else {
+            cout << "Cycle not found";
+        }
     }
+    cout << nl;
+
+
+
+    {
+        Solution2 sol2;
+
+        int n = 7;
+        vvi adj(n);
+        sol2.addEdge(adj, 0, 1);
+        sol2.addEdge(adj, 1, 2);
+        sol2.addEdge(adj, 2, 3);
+        sol2.addEdge(adj, 3, 4);
+        sol2.addEdge(adj, 4, 5);
+        sol2.addEdge(adj, 5, 6);    
+        sol2.addEdge(adj, 1, 5);
+        sol2.addEdge(adj, 4, 2);
+        auto isCycle = sol2.isCyclic(n, adj);
+        if (isCycle) {
+            cout << "Cycle found";  // Cycle found
+        } else {
+            cout << "Cycle not found";
+        }
+    }
+    cout << nl;
+
 
 
     return 0;

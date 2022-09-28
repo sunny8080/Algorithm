@@ -85,6 +85,7 @@ public:
         }
 
         // Make a set to find out node with min distance // {dist from src, node}
+        // we can also use priority queue instead of set
         set<pair<int, T>> st;
 
         unordered_map<T, T> parent;

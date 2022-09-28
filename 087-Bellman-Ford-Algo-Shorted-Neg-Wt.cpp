@@ -53,6 +53,7 @@ void fastIO() {
 
 // Bellman Ford Algo // used to find shortest dist from source in directed graph
 // it can handle -ve wt and -ve wt cycle
+// O((N-1) * E)
 
 // 1- based indexing
 class Solution {
@@ -162,7 +163,7 @@ int32_t main() {
         } else {
             cout << "Wt : " << shortDist << nl;
         }
-        cout<<nl;
+        cout << nl;
 
 
         shortDist = sol.bellmanFordAlgo(n, edgeList, 1, 2);

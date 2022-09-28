@@ -76,18 +76,18 @@ public:
             int node = q.front();
             q.pop();
 
-            for (int nbr : ls[node]) {
-                if (dist[nbr] == INT_MAX) {
+            for( auto nbr : ls[node]){
+                if( dist[node] + 1 < dist[nbr]){
+                    dist[nbr] = dist[node]+1;
                     q.push(nbr);
-                    dist[nbr] = dist[node] + 1;
                 }
             }
         }
 
-        // for( auto x : dist ){
-        //     cout << src << " -> " << x.first <<" = "<< x.second<<nl;
+        // for (auto x : dist) {
+        //     cout << src << " -> " << x.first << " = " << x.second << nl;
         // }
-        // cout<<nl;
+        // cout << nl;
 
         return dist[dest];
     }
@@ -99,17 +99,38 @@ int32_t main() {
     fastIO();
 
 
-    Graph g1;
-    g1.addEdge(0, 1);
-    g1.addEdge(0, 3);
-    g1.addEdge(1, 2);
-    g1.addEdge(2, 3);
-    g1.addEdge(3, 4);
-    g1.addEdge(4, 5);
+    {
+        Graph g1;
+        g1.addEdge(0, 1);
+        g1.addEdge(0, 3);
+        g1.addEdge(1, 2);
+        g1.addEdge(2, 3);
+        g1.addEdge(3, 4);
+        g1.addEdge(4, 5);
 
-    int dist = g1.shortestPathDist(0, 5);
-    cout << "Shortest Dist [0 -> 5] = " << dist << nl; // Shortest Dist [0 -> 5] = 3
+        int dist = g1.shortestPathDist(0, 5);
+        cout << "Shortest Dist [0 -> 5] = " << dist << nl; // Shortest Dist [0 -> 5] = 3
+    }
+    cout << nl;
 
+
+    {
+        Graph g1;
+        g1.addEdge(0, 1);
+        g1.addEdge(0, 3);
+        g1.addEdge(1, 3);
+        g1.addEdge(1, 2);
+        g1.addEdge(2, 6);
+        g1.addEdge(3, 4);
+        g1.addEdge(4, 5);
+        g1.addEdge(5, 6);
+        g1.addEdge(6, 7);
+        g1.addEdge(7, 8);
+        g1.addEdge(8, 6);
+
+        int dist = g1.shortestPathDist(0, 2);
+        cout << "Shortest Dist [0 -> 2] = " << dist << nl; // Shortest Dist [0 -> 2] = 2
+    }
 
     return 0;
 }

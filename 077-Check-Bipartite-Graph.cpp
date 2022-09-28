@@ -50,7 +50,7 @@ void fastIO() {
 }
 
 
-
+// check graph is bi partite or not // by DFS
 class Solution {
 
 public:
@@ -79,12 +79,59 @@ public:
         vi vis(n, 0); // 0 - not visited, 1 - visited color is 1, 2 - visited color is 2 
         bool isBartite = dfsHelper(0, adj, vis, -1, 1);
 
-        if (isBartite) {
-            for (int i = 0; i < n; i++) {
-                cout << i << " - node color - " << vis[i] << nl;
+        // if (isBartite) {
+        //     for (int i = 0; i < n; i++) {
+        //         cout << i << " - node color - " << vis[i] << nl;
+        //     }
+        // }
+        return isBartite;
+    }
+};
+
+
+
+// check graph is bipartite or not // By BFS
+class Solution2 {
+
+public:
+    void addEdge(int u, int v, vvi& adj) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+
+    bool bipartiteBFS(int src, vvi& adj, vi& color) {
+        queue<int> q;
+
+        q.push(src);
+        color[src] = 1;
+
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+
+            for (auto nbr : adj[node]) {
+                if (color[nbr] == -1) {
+                    color[nbr] = 1 - color[node];
+                    q.push(nbr);
+                } else if (color[nbr] == color[node]) {
+                    return false;
+                }
             }
         }
-        return isBartite;
+        return true;
+    }
+
+
+    bool checkBipartite(int n, vvi& adj) {
+        vi color(n, -1);
+
+        for (int i = 0; i < n; i++) {
+            if (color[i] == -1) {
+                if (!bipartiteBFS(i, adj, color)) return false;
+            }
+        }
+        return true;
     }
 };
 
@@ -95,37 +142,60 @@ int32_t main() {
     fastIO();
     Solution sol;
 
-    int n = 5;
-    vector<int> adj[n];
-    sol.addEdge(0, 1, adj);
-    sol.addEdge(1, 2, adj);
-    sol.addEdge(2, 3, adj);
-    sol.addEdge(3, 4, adj);
-    sol.addEdge(4, 0, adj);
+    {
+        int n = 5;
+        vector<int> adj[n];
+        sol.addEdge(0, 1, adj);
+        sol.addEdge(1, 2, adj);
+        sol.addEdge(2, 3, adj);
+        sol.addEdge(3, 4, adj);
+        sol.addEdge(4, 0, adj);
 
-    bool isBartite = sol.checkBipartite(n, adj);
-    if (isBartite) {
-        cout << "Graph is bartite" << nl;
-    } else {
-        cout << "Graph is not bartite" << nl;
+        bool isBartite = sol.checkBipartite(n, adj);
+        if (isBartite) {
+            cout << "Graph is bartite" << nl;
+        } else {
+            cout << "Graph is not bartite" << nl;
+        }
     }
-    cout << nl << nl;
+    cout << nl;
 
 
+    {
+        int n1 = 5;
+        vector<int> adj1[n1];
+        sol.addEdge(0, 1, adj1);
+        sol.addEdge(1, 2, adj1);
+        sol.addEdge(2, 3, adj1);
+        sol.addEdge(3, 4, adj1);
 
-    int n1 = 5;
-    vector<int> adj1[n1];
-    sol.addEdge(0, 1, adj1);
-    sol.addEdge(1, 2, adj1);
-    sol.addEdge(2, 3, adj1);
-    sol.addEdge(3, 4, adj1);
-
-    bool isBartite1 = sol.checkBipartite(n1, adj1);
-    if (isBartite1) {
-        cout << "Graph is bartite" << nl;
-    } else {
-        cout << "Graph is not bartite" << nl;
+        bool isBartite1 = sol.checkBipartite(n1, adj1);
+        if (isBartite1) {
+            cout << "Graph is bartite" << nl;
+        } else {
+            cout << "Graph is not bartite" << nl;
+        }
     }
+    cout << nl;
+
+
+    {
+        int n = 5;
+        Solution2 sol2;
+        vvi adj(n);
+        sol2.addEdge(0, 1, adj);
+        sol2.addEdge(1, 2, adj);
+        sol2.addEdge(2, 3, adj);
+        sol2.addEdge(3, 4, adj);
+
+        bool isBartite = sol2.checkBipartite(n, adj);
+        if (isBartite) {
+            cout << "Graph is bartite" << nl;
+        } else {
+            cout << "Graph is not bartite" << nl;
+        }
+    }
+
 
     return 0;
 }
