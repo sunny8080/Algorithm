@@ -132,8 +132,8 @@ public:
         vector<int> bfs;
         queue<int> q;
 
-        q.push(0);
-        vis[0] = 1;
+        q.push(src);
+        vis[src] = 1;
 
         while (!q.empty()) {
             int node = q.front();

@@ -51,6 +51,7 @@ void fastIO() {
 
 
 // check graph is bi partite or not // by DFS
+// or two colouring problem // we have to color all balls with two diff colors and no two neighbour have same color
 class Solution {
 
 public:

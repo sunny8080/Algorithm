@@ -114,7 +114,7 @@ public:
             for( auto w : ways ){
                 int i, j;
                 tie(i,j)=make_pair(x+w.first, y+w.second);
-                if( isValidCord(x+w.first, y+w.second, r, c) && vis[i][j] == 0 && mat[i][j] == prevColor){
+                if( isValidCord(i, j, r, c) && vis[i][j] == 0 && mat[i][j] == prevColor){
                     q.push({i, j});
                     vis[i][j] = 1;
                 }

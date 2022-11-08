@@ -55,6 +55,11 @@ void fastIO() {
 // SSSP - Single Source Shortest Path  
 
 
+// NOTE :- We use set in Dijkstras,
+// We can also use priority queue but implementation may be tough
+
+
+
 template<typename T = int>
 class Graph {
     unordered_map<T, list<pair<T, int>>> adj;
@@ -148,6 +153,68 @@ public:
 
 
 
+
+
+
+
+
+// Kruskal algo
+// 1-based indexing
+class Solution {
+
+public:
+    void addEdge(vector<vector<pii>>& adj, int u, int v, int w) {
+        adj[u].push_back({ v, w });
+        adj[v].push_back({ u, w });
+    }
+
+    int findShortestPathByDijkstras(vector<vector<pii>>& adj, int n, int src, int dest = 1) {
+        vi dist(n + 1, INT_MAX);
+        set<pii> st; // {w, u}
+
+        dist[src] = 0;
+        st.insert({ dist[src], src });
+
+        while (!st.empty()) {
+            auto p = *(st.begin());
+            st.erase(st.begin());
+
+            int node, nodeWt;
+            tie(nodeWt, node) = p;
+
+            for (auto nbr_p : adj[node]) {
+                int u, nbr, nbrWt;
+                tie(u, nbr, nbrWt) = make_tuple(node, nbr_p.first, nbr_p.second);
+
+                if (nodeWt + nbrWt < dist[nbr]) {
+                    auto f = st.find({ dist[nbr], nbr });
+                    if (f != st.end()) {
+                        st.erase(f);
+                    }
+
+                    dist[nbr] = nodeWt + nbrWt;
+                    st.insert({ dist[nbr], nbr });
+                }
+            }
+        }
+
+        // for (int i = 1; i <= n; i++) {
+        //     if (i != src) {
+        //         if (dist[i] == INT_MAX) cout << -1 << sp;
+        //         else cout << dist[i] << sp;
+        //     }
+        // }
+        // cout<<nl;
+
+        return dist[dest];
+    }
+};
+
+
+
+
+
+
 int32_t main() {
     fastIO();
 
@@ -178,7 +245,20 @@ int32_t main() {
         int dist2 = g2.dijkstrasSSSP("Amritsar", "Bhopal");
         cout << "Wt : " << dist2 << nl;
     }
+    cout<<nl;
 
+
+    {
+        Solution sol;
+        int n = 4;
+        vector<vector<pii>> adj(n+1);
+        sol.addEdge(adj, 1, 2, 24);
+        sol.addEdge(adj, 1, 4, 20);
+        sol.addEdge(adj, 3, 1, 3);
+        sol.addEdge(adj, 4, 3, 12);
+        auto len = sol.findShortestPathByDijkstras(adj, n, 1, 2);
+        cout<<"Min dist from 1 to 2 : "<<len<<nl;
+    }
 
     return 0;
 }
@@ -192,3 +272,6 @@ int32_t main() {
 //
 // Path : Bhopal <- Agra <- Delhi <- Amritsar
 // Wt : 4
+//
+// Min dist from 1 to 2 : 24
+

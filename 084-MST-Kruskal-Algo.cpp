@@ -72,8 +72,7 @@ public:
         // }
 
         parent.resize(n, -1);
-        rank.resize(n);
-        iota(all(rank), 0);
+        rank.resize(n, 1);
     }
 
 
@@ -125,7 +124,7 @@ public:
         vpii nums;
 
         // Initiate a DSU
-        DSU dsu(n);
+        DSU dsu(n); 
 
         for (auto edge : edgeList) {
             int w = edge[0];

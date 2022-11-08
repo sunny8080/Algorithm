@@ -52,7 +52,7 @@ void fastIO() {
 
 
 // Adjacency list
-// Bidirectional / Undirected Graph  Where vertex is a int
+// Bidirectional / Undirected Graph  Where vertex is a integer
 class Graph1 {
     int v;
     list<int>* ls;
@@ -127,7 +127,7 @@ public:
         this->e = e;
         adj = vector<vector<int>>(v + 1);
         for (int i = 0; i <= v; i++) {
-            adj[i] = vector<int>(e + 1);
+            adj[i] = vector<int>(v + 1);
         }
         // cout<<adj.size()<<sp<<adj[0].size()<<nl;
     }

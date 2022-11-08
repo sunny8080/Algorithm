@@ -120,6 +120,51 @@ public:
 
 
 
+
+
+
+
+// Prims algo // find mst wt
+class Solution {
+
+public:
+    void addEdge(vector<vector<pii>>& adj, int u, int v, int w) {
+        adj[u].push_back({ v, w });
+        adj[v].push_back({ u, w });
+    }
+
+    int mstByPrims(vector<vector<pii>>& adj, int n) {
+        vi vis(n, 0);
+        priority_queue<pair<int, int>, vector<pii>, greater<pii>> q;
+        q.push({ 0, 0 }); // {w, v}
+        int mstWt = 0;
+
+        while (!q.empty()) {
+            auto best = q.top();
+            q.pop();
+
+            int w, to;
+            tie(w, to) = best;
+
+            if (vis[to]) continue;
+
+            mstWt += w;
+            vis[to] = 1;
+
+            for (auto nbr : adj[to]) {
+                int u, v, w;
+                tie(u, v, w) = make_tuple(to, nbr.first, nbr.second);
+                if (vis[v] == 0) {
+                    q.push({ w, v });
+                }
+            }
+        }
+        return mstWt;
+    }
+};
+
+
+
 int32_t main() {
     fastIO();
 
@@ -133,8 +178,9 @@ int32_t main() {
         g.addEdge(adj, 2, 0, 2);
         g.addEdge(adj, 1, 2, 2);
         g.addEdge(adj, 0, 3, 2);
-        cout<<g.primsAlgo(n, adj);
+        cout<<g.primsAlgo(n, adj)<<nl;
     }
+    cout<<nl;
 
 
 
@@ -151,6 +197,20 @@ int32_t main() {
     //     cout << gr.primsAlgo(n, adj);
     // }
 
+
+    {
+        Solution sol;
+        int n = 4;
+        vector<vector<pair<int, int>>> adj(n);
+        sol.addEdge(adj, 0, 1, 1);
+        sol.addEdge(adj, 1, 3, 2);
+        sol.addEdge(adj, 3, 2, 3);
+        sol.addEdge(adj, 2, 0, 2);
+        sol.addEdge(adj, 1, 2, 2);
+        sol.addEdge(adj, 0, 3, 2);
+        cout << sol.mstByPrims(adj, n)<<nl; //5
+    }
+
     return 0;
 }
 
@@ -162,4 +222,6 @@ int32_t main() {
 // 0 1 1
 // 0 2 2
 // 0 3 2
+// 5
+//
 // 5

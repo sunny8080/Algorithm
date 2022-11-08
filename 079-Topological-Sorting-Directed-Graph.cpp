@@ -137,6 +137,13 @@ public:
 
 
 
+
+
+
+
+
+
+
 // topological sorting by BFS
 template<typename T = int>
 class Graph2 {
@@ -192,6 +199,14 @@ public:
 
 
 
+
+
+
+
+
+
+
+
 // topological sorting using BFS 
 // it also check topo sorting is possible or not, by checking graph contain cycle or not
 class Solution2 {
@@ -220,7 +235,7 @@ public:
         while (!indeg.empty()) {
             auto p = *(indeg.begin());
 
-            // graph contain cycle // so no topological soting possible
+            // graph contain cycle // so no topological sorting possible
             if (p.first > 0) {
                 ordering.clear();
                 break;
@@ -274,6 +289,20 @@ int32_t main() {
         g2.topologicalSortingByBFS();
     }
     cout << nl << nl;
+
+
+    {
+        Graph1<int> g3;
+        g3.addEdge(0, 2);
+        g3.addEdge(1, 2);
+        g3.addEdge(2, 3);
+        g3.addEdge(3, 5);
+        g3.addEdge(2, 5);
+        g3.addEdge(1, 4);
+        g3.addEdge(4, 5);
+        g3.topologicalSortingByDFS();
+    }
+    cout << nl;
 
 
     {
