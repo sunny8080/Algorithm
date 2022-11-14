@@ -151,25 +151,36 @@ public:
         Node* cur = root;
         for (auto ch : pre) {
             if (cur->child.count(ch) == 0) return 0;
-            cur= cur->child[ch];
+            cur = cur->child[ch];
         }
         return cur->cnt;
     }
 
 
     // return how many strings are smaller than string name
-    int lexicographically_smaller(string name){
-        Node *cur = root;
-        int ans=0;
-        for(auto ch : name ){
-            for(char c='a'; c!=ch; c++){
-                if( cur->child[c] != NULL ) ans += cur->child[c]->cnt;
+    int lexicographically_smaller(string name) {
+        Node* cur = root;
+        int ans = 0;
+        for (auto ch : name) {
+            for (char c = 'a'; c != ch; c++) {
+                if (cur->child[c] != NULL) ans += cur->child[c]->cnt;
             }
 
-            if( cur->child.count(ch) ==0) return ans;
+            if (cur->child.count(ch) == 0) return ans;
             cur = cur->child[ch];
         }
         return ans;
+    }
+
+
+
+    // return is there any substring, which matches with the given pattern
+    bool stringMatching(string text, string pat) {
+        // construct trie // insert all suffix substring  // root should NULL
+        for (int i = 0; i < text.size(); i++) {
+            insert(text.substr(i));
+        }
+        return startsWith(pat);
     }
 };
 
@@ -183,6 +194,75 @@ public:
  * bool param_3 = obj->startsWith(prefix);
  */
 
+
+
+
+
+
+
+
+
+
+
+
+struct node2 {
+    node2* nxt[26];
+    bool ended;
+    node2() {
+        for (int i = 0; i < 26; i++) nxt[i] = NULL;
+        ended = false;
+    }
+};
+
+
+class Trie2 {
+    node2* root;
+public:
+    Trie2() {
+        root = new node2();
+    }
+
+    void insert(string s) {
+        node2* cur = root;
+        for (auto ch : s) {
+            int t = ch - 'a';
+            if (cur->nxt[t] == NULL) cur->nxt[t] = new node2();
+            cur = cur->nxt[t];
+        }
+        cur->ended = true;
+    }
+
+    bool search(string s) {
+        node2* cur = root;
+        for (auto ch : s) {
+            int t = ch - 'a';
+            if (cur->nxt[t] == NULL) return 0;
+            cur = cur->nxt[t];
+        }
+        return cur->ended;
+    }
+
+    bool startsWith(string prefix) {
+        node2* cur = root;
+        for (auto ch : prefix) {
+            int t = ch - 'a';
+            if (cur->nxt[t] == NULL) return 0;
+            cur = cur->nxt[t];
+        }
+        return 1;
+    }
+
+
+    // return is there any substring, which matches with the given pattern
+    bool stringMatching(string text, string pat) {
+        // construct trie // insert all suffix substring  // root should NULL
+        for (int i = 0; i < text.size(); i++) {
+            insert(text.substr(i));
+        }
+        return startsWith(pat);
+    }
+
+};
 
 
 
@@ -206,16 +286,43 @@ int32_t main() {
 
         for (int i = 0; i < n; i++) cout << t.uniquePrefix(words[i]) << sp;
         cout << nl;
-    
-        cout<<t.name_with_prefix("co")<<nl; // 2
-        cout<<t.name_with_prefix("coa")<<nl; // 0
 
-        cout<<t.lexicographically_smaller("aaaaaaaaaaaaaa")<<nl; // 0
-        cout<<t.lexicographically_smaller("dove")<<nl; // 3
-        cout<<t.lexicographically_smaller("zzzzzzzzzzzzzz")<<nl; // 5
+        cout << t.name_with_prefix("co") << nl; // 2
+        cout << t.name_with_prefix("coa") << nl; // 0
+
+        cout << t.lexicographically_smaller("aaaaaaaaaaaaaa") << nl; // 0
+        cout << t.lexicographically_smaller("dove") << nl; // 3
+        cout << t.lexicographically_smaller("zzzzzzzzzzzzzz") << nl; // 5
 
     }
     cout << nl;
+
+
+    {
+        string text = "abaacadbacad";
+        string pat = "aaca";
+        string pat2 = "axyz";
+
+        // // O(N*M)
+        // int fnd = 0;
+        // for (int i = 0; i + pat.size() <= text.size(); i++) {
+        //     if (text.substr(i, pat.size()) == pat) {
+        //         cout << "Found at index : " << i << nl;
+        //         fnd = 1;
+        //         break;
+        //     }
+        // }
+        // if (!fnd) cout << "Not found" << nl;
+
+        Trie t;
+        cout << t.stringMatching(text, pat) << nl; // 1
+        cout << t.stringMatching(text, pat2) << nl; // 0
+
+        Trie2 t2;
+        cout << t2.stringMatching(text, pat) << nl; // 1
+        // cout << t2.search(text) << nl; // 1
+        cout << t2.stringMatching(text, pat2) << nl; // 0
+    }
 
 
 
