@@ -157,6 +157,7 @@ public:
     }
 
 
+    // prefix count
     // return how many strings are smaller than string name
     int lexicographically_smaller(string name) {
         Node* cur = root;
@@ -208,9 +209,11 @@ public:
 struct node2 {
     node2* nxt[26];
     bool ended;
+    int cnt;
     node2() {
         for (int i = 0; i < 26; i++) nxt[i] = NULL;
         ended = false;
+        cnt = 0;
     }
 };
 
@@ -227,8 +230,10 @@ public:
         for (auto ch : s) {
             int t = ch - 'a';
             if (cur->nxt[t] == NULL) cur->nxt[t] = new node2();
+            cur->cnt++;
             cur = cur->nxt[t];
         }
+        cur->cnt++;
         cur->ended = true;
     }
 
@@ -260,6 +265,23 @@ public:
             insert(text.substr(i));
         }
         return startsWith(pat);
+    }
+
+
+
+    // return no of words starting with the prefix
+    int prefixCount(vector<string>& words, string pref) {
+        root = new node2();
+        for (auto s : words) insert(s);
+
+        node2* cur = root;
+        int cnt = 0;
+        for (auto ch : pref) {
+            if (cur->nxt[ch - 'a'] == NULL) return 0;
+            cur = cur->nxt[ch - 'a'];
+            cnt = cur->cnt;
+        }
+        return cnt;
     }
 
 };
