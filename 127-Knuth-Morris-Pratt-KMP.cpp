@@ -50,6 +50,9 @@ void fastIO() {
     // #endif
 }
 
+
+// QUE :- https://leetcode.com/problems/longest-happy-prefix/
+
 // KMP - Knuth Morris Pratt Algo
 // Returns all indices where a pattern found in a text
 
@@ -63,9 +66,10 @@ public:
     vi compute_lps_trivial(string s) {
         int n = s.size();
         vi lps(n, 0);
+        // lps[i] = lenngth of the longest substring ending at index i which is prefix and also suffix (i.e., LPS)
         for (int i = 0; i < n; i++) {
             for (int len = 0; len <= i; len++) {
-                // check prefix == suffix
+                // check prefix == suffix // O(N)
                 if (s.substr(0, len) == s.substr(i - len + 1, len)) {
                     lps[i] = len;
                 }
@@ -79,6 +83,7 @@ public:
     vi compute_lps(string s) {
         int n = s.size();
         vector<int> lps(n, 0);
+        // lps[i] = lenngth of the longest substring ending at index i which is prefix and also suffix (i.e., LPS)
         lps[0] = 0;
 
 
@@ -154,9 +159,9 @@ public:
         // cout<<s<<nl;
 
         vi lps = compute_lps(s);
-        for(int i=m+1; i<s.size(); i++){
-            if( lps[i] == m ){
-                occurances.push_back(i-2*m);
+        for (int i = m + 1; i < s.size(); i++) {
+            if (lps[i] == m) {
+                occurances.push_back(i - 2 * m);
             }
         }
 
@@ -176,7 +181,7 @@ int32_t main() {
         string s = "abababbababa";
         auto lps1 = sol.compute_lps_trivial(s);
         auto lps2 = sol.compute_lps(s);
-        PRT(s);     // a b a b a b b a b a b a 
+        PRT(s);      // a b a b a b b a b a b a 
         PRT(lps1);   // 0 0 1 2 3 4 0 1 2 3 4 5
         PRT(lps2);   // 0 0 1 2 3 4 0 1 2 3 4 5
     }
