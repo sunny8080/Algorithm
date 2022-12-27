@@ -51,7 +51,7 @@ void fastIO() {
 class Solution {
 
 public:
-    // #METHOD - 1
+    // #METHOD - 1 // O(N)
     int gcd(int a, int b) {
         int i;
         for (i = min(a, b); i >= 1; i--) {
@@ -60,7 +60,7 @@ public:
         return i;
     }
 
-    // METHOD - 2
+    // METHOD - 2 // O(logN)
     int euclidGcd(int a, int b) {
         return b == 0 ? a : gcd(b, a % b);
     }
@@ -101,6 +101,7 @@ public:
     }
 
     int inverseModulo(int a, int m) {
+        // a*x + m*y = gcd(a, b) = 1
         // Check Inverse exists or not 
         if (euclidGcd(a, m) != 1) {
             cout << "Modulo Inverse not exist" << nl;
@@ -115,6 +116,7 @@ public:
 
     // inverse Mod using Euclid's extended theorem by iterative
     int invModByIterarive(int a, int m) {
+        // a*x + m*y = gcd(a, b) = 1
         int x = 1, y = 0, m0 = m;
 
         if (m == 1) return 0;

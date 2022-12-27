@@ -162,8 +162,87 @@ public:
         // return firstOcc2(haystack, needle);
     }
 
+
 };
 
+
+
+
+
+class Solution2 {
+
+public:
+    // rabin carp rolling algo
+    // return no of times pattern occured in txt
+    // rolling hash is used in opposite fashion -> "ABC" -> A*31*31 + B*31 + C*1
+    // in this it is easy to remove 1st char from window
+    int countMatch1(string txt, string pat) {
+        ll m = txt.size(), n = pat.size();
+        if (m < n) return 0;
+        ll p1 = 29, pow1 = 1;
+        ll hash1 = 0, hash2 = 0;
+
+        for (ll i = n - 1; i >= 0; i--) {
+            hash1 = (hash1 + (pat[i] - 'a' + 1) * pow1) % mod;
+            hash2 = (hash2 + (txt[i] - 'a' + 1) * pow1) % mod;
+            pow1 = (pow1 * p1) % mod;
+        }
+
+        ll cnt = 0;
+        pow1 = 1;
+        for (ll i = 1; i <= n - 1; i++) pow1 = (pow1 * p1) % mod;
+        if (hash1 == hash2) cnt++;
+
+        for (ll i = n; i < m; i++) {
+            hash2 = (hash2 - (txt[i - n] - 'a' + 1) * pow1 + mod) % mod; // remove 1st char
+            hash2 = ((hash2 * p1) % mod + (txt[i] - 'a' + 1)) % mod; // add current char
+            if (hash1 == hash2) cnt++;
+        }
+
+        return cnt;
+    }
+
+
+    int countMatch2(string txt, string pat) {
+        ll m = txt.size(), n = pat.size();
+        if (m < n || txt == "" || pat == "") return 0;
+
+        ll pwr1 = 1, p = 31, patCode = 0, txtCode = 0;
+        for (int i = 0; i < n; i++) patCode = (patCode * p + pat[i]) % mod, pwr1 = (pwr1 * p) % mod;
+
+        int cnt = 0;
+        for (int i = 0; i < txt.size(); i++) {
+            txtCode = (txtCode * p + txt[i]) % mod;
+            if (i < n - 1) continue;
+            if (i >= n) txtCode = (txtCode - txt[i - n] * pwr1) % mod;
+            if (txtCode < 0) txtCode += mod;
+            if (txtCode == patCode && txt.substr(i - n + 1, n) == pat) cnt++;
+        }
+        return cnt;
+    }
+
+
+
+    vi findAllOcc(string txt, string pat) {
+        int patHash = 0, hash = 0, p = 31, pwr = 1, k = pat.size();
+        vi occ;
+
+        for (int i = 0; i < k; i++) patHash = (patHash * p + pat[i] + mod) % mod, pwr = (pwr * p) % mod;
+
+        for (int i = 0; i < txt.size(); i++) {
+            hash = (hash * p + txt[i]) % mod;
+            if (i >= k) hash = (hash - txt[i - k] * pwr + mod) % mod;
+            if (hash < 0) hash += mod;
+            if (i >= k - 1 && hash == patHash) {
+                // if (txt.substr(i - k + 1, k) == pat) occ.push_back(i - k + 1);
+                occ.push_back(i - k + 1);
+            }
+        }
+
+        return occ;
+    }
+
+};
 
 
 int32_t main() {
@@ -190,6 +269,13 @@ int32_t main() {
     cout << sol.firstOcc2("abbabcabbcabba", "xyasdfasdfsadfasdfasdf") << nl; // -1
     cout << sol.firstOcc2("THIS IS A TEST TEXT", "TEST") << nl; // -1 // wrong ans 
     cout << sol.firstOcc2("abc", "c") << nl; // 2
+    cout<<nl;
+
+    {
+        Solution2 sol2;
+        auto nums = sol2.findAllOcc("absajhabtabsabs", "abs"); // 0 9 12
+        PRT(nums);
+    }
 
     return 0;
 }

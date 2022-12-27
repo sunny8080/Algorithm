@@ -48,6 +48,7 @@ void fastIO(){
 //    #endif
 }
 
+
 const int N = 1e7;
 
 void bitsetSieve( bitset<N+5> &bset, vi &primes ){
@@ -65,6 +66,7 @@ void bitsetSieve( bitset<N+5> &bset, vi &primes ){
     }
 }
 
+
 bool isPrime( ll n, bitset<N+5> &bset, vi &primes ){
     // if n < 1e7
     if( n <= N ){
@@ -77,6 +79,9 @@ bool isPrime( ll n, bitset<N+5> &bset, vi &primes ){
     }
     return true;
 }
+
+
+
 
 int32_t main(){
     fastIO();

@@ -55,7 +55,7 @@ void fastIO() {
 
 
 // QUE :- https://leetcode.com/problems/longest-increasing-subsequence/submissions/
-
+// Soln - https://youtu.be/on2hvxBXJH4?list=TLPQMjUxMTIwMjJnDOPHMQG5xA
 
 
 struct segment {
@@ -208,7 +208,7 @@ public:
     }
 
 
-    // METHOD - 4 // Using longest common subsequence// O(N^2)
+    // METHOD - 5 // Using longest common subsequence// O(N^2)
     int lengthOfLIS(vector<int>& nums) {
         vector<int> nums2(nums);
         sort(nums2.begin(), nums2.end());
@@ -230,7 +230,7 @@ class Solution2 {
 
 public:
     // METHOD 1 // O(N*N)
-    int LICS(vector<int> arr, int n) { // O(N*N)
+    int LICS(vector<int> arr, int n) { 
         vector<int> lis(n);
         lis[0] = 1;
         for (int i = 1; i < n; i++) {
@@ -267,8 +267,11 @@ public:
         return (*max_element(lis.begin(), lis.end()));
     }
 
-    // METHOD 2 // O(N*logN)
-    int LICS2(vector<int> arr, int n) {
+
+
+    // METHOD 2 // O(N*logN) // Binary Search
+    int LICS2(vector<int> &arr, int n) {
+        // Remeber seq is just a temp array, it is not LIS // it can only used to determine the length of LIS
         vector<int> seq;
         seq.push_back(arr[0]);
         for (int i = 1; i < n; i++) {
@@ -279,11 +282,7 @@ public:
                 seq[indx] = arr[i];
             }
         }
-        cout << "LICS : ";
-        for (auto x : seq)
-            cout << x << " ";
-        cout << endl;
-        return (seq.size());
+        return seq.size();
     }
 
 };
@@ -293,13 +292,13 @@ int32_t main() {
     fastIO();
     Solution sol;
 
-    {
-        int n; cin >> n;
-        vi nums(n);
-        for (auto& x : nums) cin >> x;
-        cout << sol.lengthOfLIS(nums) << nl;
-    }
-    cout << nl;
+    // {
+    //     int n; cin >> n;
+    //     vi nums(n);
+    //     for (auto& x : nums) cin >> x;
+    //     cout << sol.lengthOfLIS(nums) << nl;
+    // }
+    // cout << nl;
 
 
     {

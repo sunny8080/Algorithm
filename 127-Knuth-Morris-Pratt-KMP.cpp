@@ -52,6 +52,7 @@ void fastIO() {
 
 
 // QUE :- https://leetcode.com/problems/longest-happy-prefix/
+// YT :- https://www.youtube.com/watch?v=GTJr8OvyEVQ
 
 // KMP - Knuth Morris Pratt Algo
 // Returns all indices where a pattern found in a text
@@ -79,27 +80,12 @@ public:
     }
 
 
-    // O(2*N) = O(N)
+    // O(2*N) = O(N) // BEST
     vi compute_lps(string s) {
         int n = s.size();
         vector<int> lps(n, 0);
         // lps[i] = lenngth of the longest substring ending at index i which is prefix and also suffix (i.e., LPS)
         lps[0] = 0;
-
-
-        // int i = 1, j = 0;
-        // while (i < n) {
-        //     if (s[i] == s[j]) {
-        //         lps[i] = j + 1;
-        //         i++; j++;
-        //     } else if (j != 0) {
-        //         // find the longest suffix which was also the prefix
-        //         j = lps[j - 1];
-        //     } else {
-        //         lps[i++] = 0;
-        //     }
-        // }
-
 
         // better
         for (int i = 1; i < n; i++) {
@@ -166,6 +152,25 @@ public:
         }
 
         return occurances;
+    }
+
+
+
+    int lenOfLongestPrefixPalindromeByKMP(string s) {
+        string tmp = s;
+        reverse(tmp.begin(), tmp.end());
+        s = s + "#" + tmp;
+
+        int n = s.size();
+        vector<int> lps(n, 0); // lps[i] - length of longest prefix which is also suffix ending at i
+
+        for (int i = 1; i < n; i++) {
+            int j = lps[i - 1];
+            while (j > 0 && s[i] != s[j]) j = lps[j - 1];
+            lps[i] = j + (s[i] == s[j]);
+        }
+
+        return lps[n - 1]; // length of longest longest prefix which is palindrome
     }
 
 

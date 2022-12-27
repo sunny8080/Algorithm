@@ -50,6 +50,8 @@ void fastIO() {
     //    #endif
 }
 
+
+
 bool isPrime(int n) {
     // METHOD - 1
     // for( int i=2; i<n; i++ ){
@@ -64,6 +66,9 @@ bool isPrime(int n) {
     }
     return true;
 }
+
+
+
 
 
 // Sieve of Eratosthenes  // METHOD -3.1
@@ -98,6 +103,9 @@ void prime_sieve(vector<int>& prime) {
 }
 
 
+
+
+
 // find all primes from [1 ... N]  // METHOD - 3.2 
 vi primeSieve(ll N) {
     vi primes;
@@ -119,6 +127,10 @@ vi primeSieve(ll N) {
 
     return primes;
 }
+
+
+
+
 
 int32_t main() {
     fastIO();

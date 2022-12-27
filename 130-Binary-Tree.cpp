@@ -122,7 +122,6 @@ public:
             }
             ans.push_back(level);
         }
-
         return ans;
     }
 
@@ -144,6 +143,7 @@ public:
             if (root->right) stk.push(root->right);
             if (root->left) stk.push(root->left);
         }
+        return ans;
     }
 
 
@@ -210,7 +210,7 @@ public:
                     ans.push_back(tmp->data);
 
                     while (!stk.empty() && tmp == stk.top()->right) {
-                        tmp = stk.top(), stk.pop();
+                        tmp = stk.top(); stk.pop();
                         ans.push_back(tmp->data);
                     }
                 } else {

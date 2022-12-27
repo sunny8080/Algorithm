@@ -5,7 +5,7 @@ using namespace std;
 // using namespace __gnu_pbds;
 
 #define ll               long long
-#define int              long long
+// #define int              long long
 #define ull              unsigned long long
 #define ff               first
 #define ss               second
@@ -16,6 +16,7 @@ using namespace std;
 #define vll              vector<ll> 
 #define vvi              vector< vector<int>>
 #define vvll             vector< vector<ll>>
+#define vpii             vector<pair<int,int>>
 #define mii              map<int,int>
 #define pqb              priority_queue<int>
 #define pqs              priority_queue<int, vector<int>, greater<int>>
@@ -26,16 +27,16 @@ using namespace std;
 #define ps(x,y)          fixed<<setprecision(y)<<x
 #define mk(arr, n, type) type *arr=new type[n];
 #define wt(x)            int x; cin>>x; while( x-- )
-#define rep(i,a,b)       for( int i=a; i<=b; i++ )
-#define repi(i,a,b)      for( int i=a; i>=b; i-- )
 #define sp               ' '
 #define nl               char(10)
-#define endl             char(10)
 #define PRT(ar)          for( auto i : ar ) cout<<i<<sp; cout<<nl;
 #define mems(x,ch)       memset(x,ch,sizeof(x))
 #define sortv(x)         sort(x.begin(),x.end())
 #define sortvr(x)        sort(x.rbegin(),x.rend())
 #define all(x)           x.begin(), x.end()
+#define fr(t,a,b)        for( int t=(a); t<=(b); t++)
+#define frr(t,a,b)       for( int t=(a); t>=(b); t--)
+#define cn(x)            int x; cin>>x;
 
 const ll N = 1e5 + 5;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
@@ -50,56 +51,58 @@ void fastIO() {
 }
 
 
-// QUE :- https://leetcode.com/problems/longest-increasing-subsequence/
-// Go to 118
+// QUE :- https://leetcode.com/problems/valid-parentheses/
 
-// Solution using Fenwick Tree or BIT // O(NlogN)
 class Solution {
-
-    int query(vector<int>& BIT, int ind) {
-        int ans = 0;
-        while (ind > 0) {
-            ans = max(ans, BIT[ind]);
-            ind -= (ind & (-ind));
-        }
-        return ans;
+    bool isOpen(char ch) {
+        return (ch == '(' || ch == '{' || ch == '[');
+    }
+    char closeB(char ch) {
+        if (ch == '(') return ')';
+        if (ch == '{') return '}';
+        return ']';
     }
 
-    void update(vector<int>& BIT, int n, int ind, int inc) {
-        while (ind <= n) {
-            BIT[ind] = max(inc, BIT[ind]);
-            ind += (ind & (-ind));
+    int getTop(string& s, int ind) {
+        int right = 0;
+        while (ind >= 0) {
+            if (isOpen(s[ind])) right--;
+            else right++;
+            if (right < 0) return ind;
+            ind--;
         }
+        return -1;
     }
-
-    int solve(vector<int>& nums, int n) {
-        // Co-ordination compression
-        set<int> st;
-        for (auto x : nums) st.insert(x);
-        map<int, int> mpp;
-        int i = 1;
-        for (auto x : st) mpp[x] = i++;
-
-        vector<int> temp(n);
-        for (int i = 0; i < n; i++) {
-            temp[i] = mpp[nums[i]];
-        }
-        // PRT(temp);
-
-        vector<int> BIT(n + 1, 0);
-        for (int i = 0; i < n; i++) {
-            int mxTill = query(BIT, temp[i] - 1);
-            update(BIT, n, temp[i], mxTill + 1);
-        }
-        // PRT(BIT);
-        return *max_element(BIT.begin(), BIT.end());
-        // return -1;
-    }
-
 public:
+    // O(N) space
+    bool isValid1(string s) {
+        stack<char> stk;
+        for (int i = 0; i < s.size(); i++) {
+            if (isOpen(s[i])) stk.push(s[i]);
+            else {
+                if (stk.empty()) return false;
+                if (s[i] != closeB(stk.top())) return false;
+                stk.pop();
+            }
+        }
 
-    int lengthOfLIS(vector<int>& nums) {
-        return solve(nums, nums.size());
+        return (stk.empty() ? 1 : 0);
+    }
+
+    // O(1) space
+    bool isValid(string& s) {
+        int top = -1;
+        for (int i = 0; i < s.size(); i++) {
+            if (isOpen(s[i])) top = i;
+            else {
+                if (top == -1 || s[i] != closeB(s[top])) return false;
+                else {
+                    top = getTop(s, top - 1);
+                }
+            }
+        }
+
+        return top == -1;
     }
 
 };
@@ -107,27 +110,13 @@ public:
 
 int32_t main() {
     fastIO();
-    Solution sol;
-
-    int n; cin >> n;
-    vector<int> nums(n);
-    for (auto& x : nums) cin >> x;
-
-    cout << sol.lengthOfLIS(nums) << nl;
-
+    // Solution sol;
+    
+    
+    
     return 0;
 }
+    
 
 
 
-// 8
-// 10 9 2 5 3 7 101 18
-// OUT: 4
-
-// 7
-// 7 7 7 7 7 7 7
-// OUT: 1
-
-// 9
-// 1 3 6 7 9 4 10 5 6
-// OUT: 6

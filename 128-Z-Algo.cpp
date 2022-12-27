@@ -54,7 +54,7 @@ void fastIO() {
 // Z algorith,
 // z[i] = the length of the longest substring starting at ith index, which is also the prefix of s
 // prefix = s[0...(i-1)]   // substring = s[i...(n-1)]
-
+// YT :- https://youtu.be/CpZh4eF8QBw
 
 class Solution {
 

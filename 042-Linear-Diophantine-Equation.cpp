@@ -4,6 +4,7 @@
 using namespace std;
 using namespace __gnu_pbds;
 
+#define int              long long
 #define ll               long long
 #define ull              unsigned long long
 #define ff               first
@@ -98,16 +99,66 @@ public:
 
         cout << x << sp << y << sp << z;
     }
+
+
+    void extendedEuclidMethod(int a, int b, int& x, int& y, int& GCD) {
+        // Base case
+        if (b == 0) {
+            x = 1, y = 0, GCD = a;
+            return;
+        }
+
+        // Recursive case
+        extendedEuclidMethod(b, a % b, x, y, GCD);
+        int cX = y; // cX = current_X
+        int cY = x - (a / b) * y;
+
+        // cout<<cX<<sp<<cY<<nl;
+
+        x = cX, y = cY;
+    }
+
+
+    // a*x + b*y = c
+    void linear_Diophantine(int a, int b, int c) {
+        int g = gcd(a, b);
+        if (c % g != 0) cout << "-1" << nl;
+
+        // METHOD - 1
+        a /= g;
+        b /= g;
+        c /= g;
+        // cout<<a<<sp<<b<<sp<<c<<nl;
+        int y = ((c % a) * modInverse(b, a))%a;
+        int x = (c - b * y) / a;
+        cout<<x<<sp<<y<<nl;
+
+
+        // METHOD - 2
+        // int x, y, gcd, k = c / g;
+        // extendedEuclidMethod(a, b, x, y, gcd);
+        // x = k * x;
+        // y = k * y;
+        // cout << x << sp << y << nl;
+    }
 };
 
 
 int32_t main() {
     fastIO();
+    Solution sol;
 
-    ll n, p, w, d; cin >> n >> p >> w >> d;
-    (new Solution())->solve(n, p, w, d);
+    // ll n, p, w, d; cin >> n >> p >> w >> d;
+    // sol.solve(n, p, w, d);
 
-    // cout<<(new Solution())->modInverse(3, 11)<<nl;
+    // cout<<sol.modInverse(3, 11)<<nl;
+
+    {
+        sol.linear_Diophantine(3, 1, 60); // 20 0
+        sol.linear_Diophantine(6, 4, 32); // 4 2
+        sol.linear_Diophantine(3, 2, 16); // 4 2
+    }
+    
 
     return 0;
 }
