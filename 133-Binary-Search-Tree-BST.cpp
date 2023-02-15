@@ -456,139 +456,7 @@ public:
 
 
 
-// we can use reverse bool technique to use 1 class as two class
-// instead of creating two function
-class BSTIterator {
-	stack<node*> stk;
-	stack<node*> stk2;
-public:
-	BSTIterator(node* root) {
-		pushAllLeft(root);
-		pushAllRight(root);
-	}
 
-	void pushAllLeft(node* root) {
-		for (; root; stk.push(root), root = root->left);
-	}
-
-	void pushAllRight(node* root) {
-		for (; root; stk2.push(root), root = root->right);
-	}
-
-	// check we have a next smallest element or not
-	bool hasNext() {
-		return !stk.empty();
-	}
-
-	// check we have a next largest element or not
-	bool hasPrev() {
-		return !stk2.empty();
-	}
-
-	// return the next smallest element
-	// Inorder traversal - [ left root right] -> ascending order
-	int next() {
-		if (!hasNext()) return INT_MAX;
-		node* tmp = stk.top();
-		stk.pop();
-
-		// push all left nodes of current nodes
-		pushAllLeft(tmp->right);
-		return tmp->data;
-	}
-
-	// return the next largest element
-	// inverse Inorder traversal - [ right root left] -> descending order
-	int prev() {
-		if (!hasPrev()) return INT_MAX;
-		node* tmp = stk2.top();
-		stk2.pop();
-
-		// push all left nodes of current nodes
-		pushAllRight(tmp->left);
-		return tmp->data;
-	}
-
-};
-
-
-
-
-class Solution4 {
-
-public:
-	// return true if it is possible to add two no of BST which gives the result k
-	// METHOD 1 - apply two pointers approach on preorder of BST // TC - O(N) // SC - O(N)
-	// METHOD 2 - apply two pointers approach on BST iterator (next, prev) // TC - O(N) // SC - O(H)
-	bool twoSumPossible(node* root, int k) {
-		if (!root) return false;
-
-		BSTIterator bit(root);
-
-		int l = bit.next(), r = bit.prev();
-		while (l < r) {
-			if (l + r == k) return true;
-			else if (l + r < k) l = bit.next();
-			else r = bit.prev();
-		}
-		return false;
-	}
-
-
-
-
-
-
-	node* prev, * first, * middle, * last; // used in recoverBST_help
-
-	// do inorder traversal
-	void recoverBST_help(node* root) {
-		if (!root) return;
-		recoverBST_help(root->left);
-
-		// prev is the node just after root comes // i.e [ ... prev, root, ... ]
-		// mismatched found // becoz in inorder root->data > prev->data
-		if (prev && root->data < prev->data) {
-			// if this is first violation/mismatched nodes
-			if (first == NULL) {
-				first = prev;
-				middle = root;
-			} else {
-				// if this is second violation, mark this node as last
-				last = root;
-			}
-		}
-
-		// mark this node as previous
-		prev = root;
-		recoverBST_help(root->right);
-	}
-
-
-
-
-
-	// it is given that two nodes of BST are swapped // so recover BST from given incorrect BST
-	// METHOD 1 - do inorder traversal after that match BST with preorder, if some nodes 
-	// don't match change the value of node of BST // TC - O(NlogN + N) // SC - O(N)
-	// METHOD 2 - do inorder traversal and on middle find mismatched nodes // TC - O(N) // SC - O(N)
-	node* recoverBST(node* root) {
-		first = middle = last = NULL;
-		prev = new node(INT_MIN);
-		recoverBST_help(root);
-
-		// if mismatched found swap it
-		// case 1- mismatched nodes are first and last
-		// else case 2- mismatched nodes are first and middle
-		if (first && last) swap(first->data, last->data);
-		else if (first && middle)swap(first->data, middle->data);
-		return root;
-	}
-
-
-
-
-};
 
 
 
@@ -599,7 +467,7 @@ int32_t main() {
 	Solution sol;
 	Solution2 sol2;
 	Solution3 sol3;
-	Solution4 sol4;
+
 
 
 	vi nums = { 4, 8, 2, 1, 3, 10, 20, 10 };
@@ -658,36 +526,6 @@ int32_t main() {
 		cout << sol3.inorderPredecesoor(root, sol.searchNode1(root, 10))->data << nl; // 8
 	}
 	cout << nl;
-
-
-
-	/*
-	{
-		BSTIterator bit(root);
-		cout << bit.next() << nl; // 1
-		cout << bit.next() << nl; // 2
-		cout << bit.next() << nl; // 3
-		cout << bit.hasNext() << nl; // 1
-
-		cout << bit.prev() << nl; // 20
-		cout << bit.prev() << nl; // 10
-		cout << bit.prev() << nl; // 8
-		cout << bit.hasPrev() << nl; // 1
-	}
-	cout << nl;
-	*/
-
-	{
-		cout << sol4.twoSumPossible(root, 30) << nl; // 1
-		cout << sol4.twoSumPossible(root, 100) << nl; // 0
-
-		node *root3 = sol4.recoverBST(root);
-		PRT(sol0.inOrder0(root3)); // 4 2 1 3 8 10 20
-	}
-
-
-
-
 
 
 

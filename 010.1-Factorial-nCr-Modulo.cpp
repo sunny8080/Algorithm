@@ -62,8 +62,8 @@ ll nCr(int n, int r) {
 // YT - https://youtu.be/jIb1W3ObIho
 // nCr % p by DP // p is prime
 int nCrModPDp(int n, int r, int p) {
-    if(n<r) return 0;
-    if( (n-r) < r ) r = n-r;
+    if (n < r) return 0;
+    if ((n - r) < r) r = n - r;
     vi c(r + 1);
     c[0] = 1;
 
@@ -163,6 +163,64 @@ ll nCrMod1681(ll n, ll r) {
     ans = (ans * modPower(41, p41Require, 1681)) % 1681;
     return ans;
 }
+
+
+
+
+
+
+
+
+// find nCr in CP
+const int N = 1e5 + 5;
+int fact[N + 1], ifact[N + 1];
+class Solution {
+    int modPwr(int a, int b) {
+        int res = 1ll;
+        while (b) {
+            if ((b & 1)) res = (res * a) % mod;
+            a = (a * a) % mod;
+            b >>= 1;
+        }
+        return res;
+    }
+
+    int inv(int a) {
+        return modPwr(a, mod - 2);
+    }
+
+
+    void pre() {
+        fact[0] = 1;
+        for (int i = 1; i <= N; i++) fact[i] = (fact[i - 1] * i) % mod;
+        ifact[N] = inv(fact[N]);
+        for (int i = N - 1; i > 0; i--) {
+            ifact[i] = ((i + 1) * ifact[i + 1]) % mod;
+        }
+        ifact[0] = 1;
+    }
+
+    int nCr(int n, int r) {
+        if (r > n) return 0;
+        int ans = fact[n];
+        ans = (ans * ifact[r]) % mod;
+        ans = (ans * ifact[n - r]) % mod;
+        return ans;
+    }
+
+public:
+    int solve(int n, int r) {
+        pre(); // do it once before calling nCr();
+
+        return nCr(n, r);
+
+    }
+};
+
+
+
+
+
 
 
 

@@ -76,9 +76,9 @@ public:
             int node = q.front();
             q.pop();
 
-            for( auto nbr : ls[node]){
-                if( dist[node] + 1 < dist[nbr]){
-                    dist[nbr] = dist[node]+1;
+            for (auto nbr : ls[node]) {
+                if (dist[node] + 1 < dist[nbr]) {
+                    dist[nbr] = dist[node] + 1;
                     q.push(nbr);
                 }
             }
@@ -92,6 +92,44 @@ public:
         return dist[dest];
     }
 };
+
+
+
+
+
+class Solution {
+public:
+    // find shortest dist from src to every node, and if there is no path then return -1 for that node
+    // TC - O( V+ 2*E)
+    vector<int> shortestPath(vector<vector<int>>& adj, int src = 0) {
+        int n = adj.size();
+
+        vector<int> dist(n, 1e9);
+        queue<int> q;
+
+        q.push(src);
+        dist[src] = 0;
+
+        while (q.size()) {
+            int node = q.front();
+            q.pop();
+
+            for (auto nbr : adj[node]) {
+                if (dist[node] + 1 < dist[nbr]) {
+                    dist[nbr] = dist[node] + 1;
+                    q.push(nbr);
+                }
+            }
+        }
+
+        // if there is no path from src to node then put -1
+        for (auto& x : dist) if (x == 1e9) x = -1;
+        return dist;
+    }
+};
+
+
+
 
 
 

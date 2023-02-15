@@ -52,13 +52,26 @@ void fastIO() {
 
 
 
-// Manacher algo
+// Manacher algo :-
+// It is used to find all sub-palindrome in a string in O(N)
+// It can be used to find longest palindrome in a string in O(N)
+
+// In this algo, expand there is expand concept, 
+// we assume a index as center and we expand our current range as much as possible ( till our left and right char matches )
+
+// It is used only in case of odd length palindrome string, so to work properly we insert '$' or '#' at every index 
+// to make it a string with odd length (2*n + 1)
+// Ex : abaccabe => $a$b$a$c$c$a$b$e$    // (8 => 2*8+1=17)
+
+
 
 // QUE :- https://leetcode.com/problems/longest-palindromic-substring/
 
 // YT 1 - https://www.youtube.com/watch?v=QfZvw8_jz1w
 // YT 2 - https://www.youtube.com/watch?v=V-sEwsca1ak&t=72s
 // YT 3 - https://www.youtube.com/watch?v=IvakBbsAhUU
+
+// Cp-algo : https://cp-algorithms.com/string/manacher.html
 
 
 
@@ -78,6 +91,8 @@ public:
             int tmp = max(odd, even);
 
             if (len < tmp) {
+                // for even length center chars :- s[i] and s[i+1]
+                // for odd length center chars :- s[i] 
                 start_i = i - (tmp - 1) / 2;
                 len = tmp;
             }

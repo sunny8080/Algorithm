@@ -52,7 +52,8 @@ void fastIO() {
 
 
 // Z algorith,
-// z[i] = the length of the longest substring starting at ith index, which is also the prefix of s
+// z[i] = the length of the longest substring starting from ith index, which is also the prefix of s
+// Z[i] = k =>   s[0 ... (k-1)]  == s[i ... (i+k-1)]
 // prefix = s[0...(i-1)]   // substring = s[i...(n-1)]
 // YT :- https://youtu.be/CpZh4eF8QBw
 
@@ -65,11 +66,17 @@ public:
         vi z(n, 0);
 
         for (int i = 1; i < n; i++) {
+            // METHOD - 1.1
             // int j = 0, k = i;
             // while (j < n && k < n && s[k] == s[j]) z[i]++, k++, j++;
 
+            // METHOD - 1.2
+            // for (int j = i; j < n && s[j - i] == s[j]; j++) z[i]++;
+
+            // METHOD - 1.3
             // z[i]=0, always
             while ((z[i] + i < n) && s[z[i]] == s[z[i] + i]) z[i]++;
+
         }
         return z;
     }
@@ -90,7 +97,7 @@ public:
                 // each time r=l, sol (r-l) will start from 0 // so we are matching prefix from 0 and substring from i
                 while (r < n && s[r] == s[r - l]) r++;
                 r--;
-                z[i] = r - l + 1;
+                z[i] = r - l + 1; // new z range becomes s[l ... r]
             } else {
                 // we are inside the range [l...r] // s[l...r] is also a prefix
                 int k = i - l;
@@ -99,11 +106,11 @@ public:
                 if (z[k] + i <= r) {
                     z[i] = z[k];
                 } else {
-                    // may be we can expand the range [i...r] further
-                    l = i;
-                    while (r < n && s[r] == s[r - l])r++;
+                    // may be we can expand the range [i...r] further 
+                    l = i;    // compare s[r ... (n-1)] with   s[ (r-l) ... ]
+                    while (r < n && s[r] == s[r - l]) r++;
                     r--;
-                    z[i] = r - l + 1;
+                    z[i] = r - l + 1; // new z range becomes s[l ... r]
                 }
             }
         }
@@ -134,7 +141,7 @@ public:
         string str = pat + "%" + txt;
         vi z = zFun2(str);
 
-        for (int i = pat.size(); i < str.size(); i++) {
+        for (int i = pat.size() + 1; i < str.size(); i++) {
             if (z[i] == pat.size()) occ.push_back(i - pat.size() - 1);
         }
         return occ;

@@ -81,7 +81,7 @@ public:
             }
         }
 
-        vi dist(n, INT_MAX);
+        vi dist(n, 1e9);
         vi parent(n, -1);
 
         dist[src] = 0;
@@ -92,7 +92,7 @@ public:
             stk.pop();
 
             // if the node has been reached previously
-            if (dist[node] != INT_MAX) {
+            if (dist[node] != 1e9) {
                 for (auto nbr : adj[node]) {
                     if (dist[node] + nbr.second < dist[nbr.first]) {
                         dist[nbr.first] = dist[node] + nbr.second;
@@ -110,7 +110,7 @@ public:
                 cout << src << " -> " << i << " : " << dist[i] << nl;
             }
         }
-        cout<<nl;
+        cout << nl;
 
         if (dist[dest] != INT_MAX) {
             cout << "Path from " << src << " to " << dest << " : ";
@@ -126,6 +126,60 @@ public:
         return dist[dest];
     }
 };
+
+
+
+
+
+
+
+
+class Solution2 {
+    void topoSortDFS(int node, vector<int>& vis, stack<int>& stk, vector< vector<pair<int, int> >>& adj) {
+        vis[node] = 1;
+        for (auto nbrIt : adj[node]) {
+            if (!vis[nbrIt.first]) topoSortDFS(nbrIt.first, vis, stk, adj);
+        }
+        stk.push(node);
+    }
+public:
+
+
+    // TC - O( N+M ) // N - no of nodes, M - no of edges
+    // adj[i] = {{nbr, wt}, .. }
+    vector<int> shortestPath(vector< vector<pair<int, int> >>& adj, int src = 0) {
+        // step :- find the topo sort // O(N+M)
+        int n = adj.size();
+        vector<int> vis(n, 0);
+        stack<int> stk;
+        for (int i = 0; i < n; i++) if (!vis[i]) topoSortDFS(i, vis, stk, adj);
+
+
+        // step 2 :- do the distance relaxation thing // O(N+M)
+        vector<int> dist(n, 1e9);
+        dist[src] = 0;
+
+        while (stk.size()) {
+            int node = stk.top();
+            stk.pop();
+
+            for (auto nbrIt : adj[node]) {
+                int nbr = nbrIt.first, wt = nbrIt.second;
+                if (dist[node] + wt < dist[nbr]) {
+                    dist[nbr] = dist[node] + wt;
+                }
+            }
+        }
+
+        // if a node is not reachable from a src them return dist[node] = -1
+        for (auto& x : dist) x = (x == 1e9) ? -1 : x;
+        return dist;
+    }
+};
+
+
+
+
 
 
 

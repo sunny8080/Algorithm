@@ -138,8 +138,8 @@ public:
                 if (i == 0) first = cur_id;
                 if (i == size - 1) last = cur_id;
 
-                if (cur->left) q.push({ cur->left, 2 * cur_id + 1 });
-                if (cur->right) q.push({ cur->right, 2 * cur_id + 2 });
+                if (cur->left) q.push({ cur->left, 2 * 1ll * cur_id + 1 });
+                if (cur->right) q.push({ cur->right, 2 * 1ll * cur_id + 2 });
             }
             ans = max(ans, last - first + 1);
         }
@@ -227,16 +227,16 @@ public:
 
                 // visit current node's left, right and its parent node // if it exists and not visited
                 if (cur->left && !vis[cur->left]) {
-                    vis[cur->left] = 1;
                     q.push(cur->left);
+                    vis[cur->left] = 1;
                 }
                 if (cur->right && !vis[cur->right]) {
-                    vis[cur->right] = 1;
                     q.push(cur->right);
+                    vis[cur->right] = 1;
                 }
                 if (par[cur] && !vis[par[cur]]) {
-                    vis[par[cur]] = 1;
                     q.push(par[cur]);
+                    vis[par[cur]] = 1;
                 }
             }
         }

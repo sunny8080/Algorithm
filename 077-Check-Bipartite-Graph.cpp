@@ -50,7 +50,7 @@ void fastIO() {
 }
 
 
-// check graph is bi partite or not // by DFS
+// check graph is bi partite or not // by DFS // O(N)
 // or two colouring problem // we have to color all balls with two diff colors and no two neighbour have same color
 class Solution {
 
@@ -61,37 +61,38 @@ public:
     }
 
 
-    bool dfsHelper(int node, vi adj[], vi& vis, int parent, int currColor) {
-        vis[node] = currColor; // 1 or 2, both mean visited
-
+    int dfs(int node, vector<int>& color, int curCol, vector<int> adj[]) {
+        color[node] = curCol;
         for (auto nbr : adj[node]) {
-            if (vis[nbr] == 0) {
-                bool isBartite = dfsHelper(nbr, adj, vis, node, 3 - currColor);
-                if (isBartite == false) return false;
-
-            } else if (nbr != parent and currColor == vis[nbr]) {
-                return false;
-            }
+            if (color[nbr] == -1) {
+                if (dfs(nbr, color, curCol ^ 1, adj) == 0) return 0;
+            } else if (color[nbr] == curCol) return 0;
         }
-        return true;
+        return 1;
     }
 
     bool checkBipartite(int n, vi adj[]) {
-        vi vis(n, 0); // 0 - not visited, 1 - visited color is 1, 2 - visited color is 2 
-        bool isBartite = dfsHelper(0, adj, vis, -1, 1);
+        // int n = adj.size();
+        vector<int> color(n, -1); // -1 : not visited, 0 - 1st color, 1 : 2nd color
 
-        // if (isBartite) {
-        //     for (int i = 0; i < n; i++) {
-        //         cout << i << " - node color - " << vis[i] << nl;
-        //     }
+        // graph may be not connected
+        for (int i = 0; i < n; i++) {
+            if (color[i] == -1)  if (dfs(i, color, 1, adj) == 0) return 0;
+        }
+
+        // for (int i = 0; i < n; i++) {
+        //     cout << i << " - node color - " << color[i] << nl;
         // }
-        return isBartite;
+        return 1;
     }
 };
 
 
 
-// check graph is bipartite or not // By BFS
+
+
+
+// check graph is bipartite or not // By BFS // O(N)
 class Solution2 {
 
 public:
@@ -125,7 +126,7 @@ public:
 
 
     bool checkBipartite(int n, vvi& adj) {
-        vi color(n, -1);
+        vi color(n, -1); // -1 : not visited, 0 - 1st color, 1 : 2nd color
 
         for (int i = 0; i < n; i++) {
             if (color[i] == -1) {

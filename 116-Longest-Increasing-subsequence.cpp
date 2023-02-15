@@ -55,7 +55,158 @@ void fastIO() {
 
 
 // QUE :- https://leetcode.com/problems/longest-increasing-subsequence/submissions/
-// Soln - https://youtu.be/on2hvxBXJH4?list=TLPQMjUxMTIwMjJnDOPHMQG5xA
+// Soln1 - https://www.youtube.com/watch?v=ekcwMsSIzVc&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=42
+// Soln1 - https://www.youtube.com/watch?v=IFfYfonAFGc&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=43
+// Soln2 - https://www.youtube.com/watch?v=on2hvxBXJH4&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=44
+// Soln4 - https://www.youtube.com/watch?v=cKVl1TFdNXg&list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY&index=49
+
+
+
+
+
+
+// Striver's solution
+class Solution1 {
+    int solve(int ind, int prev_ind, vector<int>& nums, vector< vector<int>>& dp) {
+        if (ind == nums.size()) return 0;
+        if (dp[ind][prev_ind + 1] != -1) return dp[ind][prev_ind + 1];
+
+        int len = 0 + solve(ind + 1, prev_ind, nums, dp); // not take it
+        if (prev_ind == -1 || nums[ind] > nums[prev_ind]) {
+            len = max(len, 1 + solve(ind + 1, ind, nums, dp)); // take it
+        }
+        return dp[ind][prev_ind + 1] = len;
+    }
+public:
+    // METHOD - 1 // TC : O(N^2) // SC : O(N^2 + N) // recursion
+    int lenLis1(vector<int>& nums) {
+        int n = nums.size();
+        vector< vector<int>> dp(n, vector<int>(n + 1, -1));
+        return solve(0, -1, nums, dp);
+    }
+
+
+
+    // METHOD - 2 // TC : O(N^2) // SC : O(N^2)
+    int lenLis2(vector<int>& nums) {
+        int n = nums.size();
+        vector< vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+        for (int ind = n - 1; ind >= 0; ind--) {
+            for (int prev_ind = ind - 1; prev_ind >= -1; prev_ind--) {
+                int len = 0 + dp[ind + 1][prev_ind + 1];
+                if (prev_ind == -1 || nums[ind] > nums[prev_ind]) {
+                    len = max(len, 1 + dp[ind + 1][ind + 1]);
+                }
+                dp[ind][prev_ind + 1] = len;
+            }
+        }
+        return dp[0][0];
+    }
+
+
+
+    // METHOD - 3 // TC - O(N^2) // SC : O(N)
+    int lenLis3(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> next(n + 1, 0), cur(n + 1, 0);
+        for (int ind = n - 1; ind >= 0; ind--) {
+            for (int prev_ind = ind - 1; prev_ind >= -1; prev_ind--) {
+                int len = 0 + next[prev_ind + 1];
+                if (prev_ind == -1 || nums[ind] > nums[prev_ind]) {
+                    len = max(len, 1 + next[ind + 1]);
+                }
+                cur[prev_ind + 1] = len;
+            }
+            next = cur;
+        }
+        return next[0];
+    }
+
+
+
+
+    // METHOD - 4 // TC - O(N^2) // SC - O(N) // Print LIS
+    int lenLis4(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> dp(n, 1), hash(n);
+        int maxi = 1;
+        int lastInd = 0;
+        for (int i = 0; i < n; i++) {
+            hash[i] = i;
+            for (int prev = 0; prev < i; prev++) {
+                if (nums[prev] < nums[i] && 1 + dp[prev]>dp[i]) {
+                    dp[i] = 1 + dp[prev];
+                    hash[i] = prev;
+                }
+            }
+            if (dp[i] > maxi) {
+                maxi = dp[i], lastInd = i;
+            }
+        }
+
+        vector<int> ans;
+        ans.push_back(nums[lastInd]);
+        while (lastInd != hash[lastInd]) {
+            lastInd = hash[lastInd];
+            ans.push_back(nums[lastInd]);
+        }
+        reverse(ans.begin(), ans.end());
+        PRT(ans);
+
+        return maxi;
+    }
+
+
+
+
+    // METHOD - 5 // TC - O(NlogN) // SC - O(N) // Binary search
+    int lenLis5(vector<int>& nums) {
+        // Remeber tmp is just a temp array, it is not LIS // it can only used to determine the length of LIS
+        vector<int> tmp;
+        tmp.push_back(nums[0]);
+        for (int i = 1; i < nums.size(); i++) {
+            if (tmp.back() < nums[i]) {
+                tmp.push_back(nums[i]);
+            } else {
+                int ind = lower_bound(tmp.begin(), tmp.end(), nums[i]) - tmp.begin();
+                tmp[ind] = nums[i];
+            }
+        }
+        return tmp.size();
+    }
+
+
+    int findNumberOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> dp(n + 1, 1), cnt(n, 1);
+        int maxi = 1;
+
+        for (int i = 0; i < n; i++) {
+            for (int prev = 0; prev < i; prev++) {
+                if (nums[prev] < nums[i] && 1 + dp[prev] > dp[i]) {
+                    dp[i] = 1 + dp[prev];
+                    cnt[i] = cnt[prev];
+                } else if (nums[prev] < nums[i] && 1 + dp[prev] == dp[i]) {
+                    cnt[i] += cnt[prev];
+                }
+            }
+            maxi = max(maxi, dp[i]);
+        }
+
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (dp[i] == maxi) ans += cnt[i];
+        }
+        return ans;
+    }
+
+};
+
+
+
+
+
+
 
 
 struct segment {
@@ -78,7 +229,9 @@ struct segment {
 
 
 
-class Solution {
+
+
+class Solution2 {
     int lengthOfLCS(vector<int>& a, vector<int>& b) {
         int n = a.size();
         int m = b.size();
@@ -96,31 +249,9 @@ class Solution {
 
 public:
 
-    // METHOD -1 // DP -1  // O(N^2 + N)
+
+    // METHOD - 1 // DP -2 tricky // O(N^2 + N)
     int lengthOfLIS1(vector<int>& nums) {
-        int n = nums.size();
-
-        // dp[i]= length of lis  ending at index i
-        int dp[n];
-        for (int i = 0; i < n; i++) {
-            dp[i] = 0;
-            for (int j = 0; j <= i - 1; j++) {
-                if (nums[j] < nums[i]) dp[i] = max(dp[i], dp[j]);
-            }
-            dp[i] += 1;
-        }
-
-        int lis = 0;
-        for (int i = 0; i < n; i++) lis = max(lis, dp[i]);
-        // for( int i=0; i<n; i++ ) cout<<dp[i]<<sp;
-
-        return lis;
-    }
-
-
-
-    // METHOD - 2 // DP -2 tricky // O(N^2 + N)
-    int lengthOfLIS2(vector<int>& nums) {
         int n = nums.size();
         int dp[n + 1];
         // dp[i] = element at which increasing subsequence of length i ends
@@ -149,8 +280,8 @@ public:
 
 
 
-    // METHOD - 3 // DP -2 with binary search // O(NlogN)
-    int lengthOfLIS3(vector<int>& nums) {
+    // METHOD - 2 // DP -2 with binary search // O(NlogN)
+    int lengthOfLIS2(vector<int>& nums) {
         int n = nums.size();
         int dp[n + 1];
         // dp[i] = element at which increasing subsequence of length i ends
@@ -170,8 +301,8 @@ public:
         for (int i = 1; i <= n; i++)
             if (dp[i] != INT_MAX) lis = i;
 
-        // for(int i=0; i<n+1; i++ ) cout<<dp[i]<<" ";
-        // cout<<nl;
+        // for (int i = 0; i < n + 1; i++) if (dp[i] != INT_MIN && dp[i] != INT_MAX) cout << dp[i] << " ";
+        // cout << nl;
 
         return lis;
     }
@@ -180,8 +311,8 @@ public:
 
 
 
-    // METHOD - 4 // Using Segment Tree (or Fenwick Tree) // O(NlogN)
-    int lengthOfLIS4(vector<int>& nums) {
+    // METHOD - 3 // Using Segment Tree (or Fenwick Tree) // O(NlogN)
+    int lengthOfLIS3(vector<int>& nums) {
         int n = nums.size();
         // Co-ordination compression
         set<int> st;
@@ -208,8 +339,8 @@ public:
     }
 
 
-    // METHOD - 5 // Using longest common subsequence// O(N^2)
-    int lengthOfLIS(vector<int>& nums) {
+    // METHOD - 4 // Using longest common subsequence// O(N^2)
+    int lengthOfLIS4(vector<int>& nums) {
         vector<int> nums2(nums);
         sort(nums2.begin(), nums2.end());
         nums2.resize(distance(nums2.begin(), unique(nums2.begin(), nums2.end())));
@@ -221,95 +352,35 @@ public:
 
 
 
-
-
-
-
-
-class Solution2 {
-
-public:
-    // METHOD 1 // O(N*N)
-    int LICS(vector<int> arr, int n) { 
-        vector<int> lis(n);
-        lis[0] = 1;
-        for (int i = 1; i < n; i++) {
-            lis[i] = 1;
-            for (int j = 0; j < i; j++)
-                if (lis[j] + 1 > lis[i] && arr[j] < arr[i])
-                    lis[i] = lis[j] + 1;
-        }
-
-        // For print the longest Increasing sequence
-        int ind = 0;
-        int maxi = lis[0];
-        for (int i = n - 1; i > 0; i--)
-            if (maxi < lis[i]) {
-                ind = i;
-                maxi = lis[i];
-            }
-
-        vector<int> sq; // to store sequence
-        sq.push_back(arr[ind]);
-        for (int i = ind - 1; i >= 0; i--) {
-            if (lis[i] + 1 == lis[ind] && arr[i] < arr[ind]) {
-                ind = i;
-                sq.push_back(arr[i]);
-            }
-        }
-        reverse(sq.begin(), sq.end());
-        //cout<<"Length of Longest increasing Subsequence : "<<maxi<<"\n";
-        cout << "LICS : ";
-        for (auto x : sq)
-            cout << x << " ";
-        cout << endl;
-
-        return (*max_element(lis.begin(), lis.end()));
-    }
-
-
-
-    // METHOD 2 // O(N*logN) // Binary Search
-    int LICS2(vector<int> &arr, int n) {
-        // Remeber seq is just a temp array, it is not LIS // it can only used to determine the length of LIS
-        vector<int> seq;
-        seq.push_back(arr[0]);
-        for (int i = 1; i < n; i++) {
-            if (seq.back() < arr[i])
-                seq.push_back(arr[i]);
-            else {
-                int indx = lower_bound(seq.begin(), seq.end(), arr[i]) - seq.begin();
-                seq[indx] = arr[i];
-            }
-        }
-        return seq.size();
-    }
-
-};
-
-
 int32_t main() {
     fastIO();
-    Solution sol;
 
-    // {
-    //     int n; cin >> n;
-    //     vi nums(n);
-    //     for (auto& x : nums) cin >> x;
-    //     cout << sol.lengthOfLIS(nums) << nl;
-    // }
-    // cout << nl;
+    {
+        Solution1 sol1;
+        vector<int> nums = { 2, 1, 5, 0, 4, 6 };
+        // vector<int> nums = { 1, 2, 3, 4, 5 };
+        int len = sol1.lenLis5(nums);
+        cout << "Length of LIS : " << len << endl; // 3
+    }
+    cout << nl;
+
+    {
+        Solution1 sol1;
+        vector<int> nums = {1, 3, 5, 4, 7}; 
+        cout<<sol1.findNumberOfLIS(nums)<<nl; // 2
+    }
 
 
     {
         Solution2 sol2;
-        int n; cin >> n;
-        vector<int> arr(n);
-        for (auto& i : arr)
-            cin >> i;
-        int len = sol2.LICS(arr, n);
-        cout << "Length of Longest increasing Subsequence : " << len << endl;
+        vector<int> nums = { 2, 1, 5, 0, 4, 6 }; 
+        cout << sol2.lengthOfLIS2(nums) << nl; // 3
     }
+    cout << nl;
+
+
+
+
 
     return 0;
 }

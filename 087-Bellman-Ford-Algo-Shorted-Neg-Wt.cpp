@@ -51,9 +51,14 @@ void fastIO() {
 }
 
 
-// Bellman Ford Algo // used to find shortest dist from source in directed graph
+// Bellman Ford Algo 
+// used to find shortest dist from source to all other nodes only in directed graph
 // it can handle -ve wt and -ve wt cycle
-// O((N-1) * E)
+// O(N * E) // N - no of nodes, E- no of edges
+
+
+
+
 
 // 1- based indexing
 class Solution {
@@ -110,20 +115,72 @@ public:
 
         // print path if path exist
         if (dist[dest] != INT_MAX) {
-            cout << "Path : ";
+            vector<int> path;
             int node = dest;
-            cout << node << " <- ";
+            path.push_back(node);
             while (parent[node] != src) {
-                cout << parent[node] << " <- ";
+                path.push_back(node);
                 node = parent[node];
             }
-            cout << src << nl;
+            path.push_back(src);
+
+            cout << "Path : ";
+            for (int i = 0; i < path.size() - 1; i++) {
+                cout << path[i] << " <- ";
+            }
+            cout << path.back() << nl;
         }
 
         return dist[dest];
     }
 
 };
+
+
+
+
+
+
+
+
+class Solution2 {
+public:
+    // return shortest distance to all nodes from source node using bellman ford algo, graph must be directed
+    // return, {-1} : -ve wt cycle found  // 1e8 : path not found   
+    vector<int> bellman_ford(int n, vector<vector<int>>& edges, int src) {
+        vector<int> dist(n, 1e8);
+        dist[src] = 0;
+
+        // relax edges n-1 times
+        for (int i = 0; i < n - 1; i++) {
+            for (auto& e : edges) {
+                int u, v, wt;
+                tie(u, v, wt) = make_tuple(e[0], e[1], e[2]);
+                if (dist[u] != 1e8 && dist[u] + wt < dist[v]) {
+                    dist[v] = dist[u] + wt;
+                }
+            }
+        }
+
+        // Nth iteration to check -ve wt cycle
+        for (auto& e : edges) {
+            int u, v, wt;
+            tie(u, v, wt) = make_tuple(e[0], e[1], e[2]);
+            if (dist[u] != 1e8 && dist[u] + wt < dist[v]) {
+                return { -1 }; // -ve wt cycle found
+            }
+        }
+        return dist;
+    }
+};
+
+
+
+
+
+
+
+
 
 
 
@@ -140,12 +197,14 @@ int32_t main() {
         // sol.printedgeList(edgeList);
         int shortDist = sol.bellmanFordAlgo(n, edgeList, 1, 2);
         if (shortDist == INT_MIN) {
-            cout << "Negative Cycle Weight found" << nl;
+            cout << "Negative Cycle Weight found" << nl; // Negative Cycle Weight found
         } else {
             cout << "Wt : " << shortDist << nl;
         }
     }
     cout << nl << nl;
+
+
 
 
     {
@@ -156,10 +215,11 @@ int32_t main() {
         sol.addEdge(edgeList, 1, 3, -10);
         // sol.printedgeList(edgeList);
         int shortDist = sol.bellmanFordAlgo(n, edgeList, 3, 2);
+
         if (shortDist == INT_MIN) {
             cout << "Negative Cycle Weight found" << nl;
         } else if (shortDist == INT_MAX) {
-            cout << "Path not possible" << nl;
+            cout << "Path not possible" << nl; // Path not possible
         } else {
             cout << "Wt : " << shortDist << nl;
         }
@@ -172,7 +232,7 @@ int32_t main() {
         } else if (shortDist == INT_MAX) {
             cout << "Path not possible" << nl;
         } else {
-            cout << "Wt : " << shortDist << nl;
+            cout << "Wt : " << shortDist << nl; // Wt : 3
         }
 
     }
@@ -185,9 +245,9 @@ int32_t main() {
 // OUT :-
 //
 // Negative Cycle Weight found
-//
+
 // Path not possible
-//
+
 // Path : 2 <- 1
 // Wt: 3
 

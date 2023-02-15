@@ -4,38 +4,51 @@
 using namespace std;
 // using namespace __gnu_pbds;
 
-#define ll               long long
-// #define int              long long
-#define ull              unsigned long long
-#define ff               first
-#define ss               second
-#define pb               push_back
-#define mp               make_pair
-#define pii              pair<int,int>
-#define vi               vector<int>
-#define vll              vector<ll> 
-#define vvi              vector< vector<int>>
-#define vvll             vector< vector<ll>>
-#define mii              map<int,int>
-#define pqb              priority_queue<int>
-#define pqs              priority_queue<int, vector<int>, greater<int>>
-#define setbits(x)       __builtin_popcountll(x)
-#define zrobits(x)       __builtin_ctzll(x)
-#define mod              1000000007
-#define inf              1e18
-#define ps(x,y)          fixed<<setprecision(y)<<x
-#define mk(arr, n, type) type *arr=new type[n];
-#define wt(x)            int x; cin>>x; while( x-- )
-#define rep(i,a,b)       for( int i=a; i<=b; i++ )
-#define repi(i,a,b)      for( int i=a; i>=b; i-- )
-#define sp               ' '
-#define nl               char(10)
-#define endl             char(10)
-#define PRT(ar)          for( auto i : ar ) cout<<i<<sp; cout<<nl;
-#define mems(x,ch)       memset(x,ch,sizeof(x))
-#define sortv(x)         sort(x.begin(),x.end())
-#define sortvr(x)        sort(x.rbegin(),x.rend())
-#define all(x)           x.begin(), x.end()
+#define ll                 long long
+// #define int                long long
+#define ull                unsigned long long
+#define ff                 first
+#define ss                 second
+#define pb                 push_back
+#define mp                 make_pair
+#define pii                pair<int,int>
+#define vi                 vector<int>
+#define vll                vector<ll> 
+#define vvi                vector< vector<int>>
+#define vvll               vector< vector<ll>>
+#define vpii               vector<pair<int,int>>
+#define mii                map<int,int>
+#define pqb                priority_queue<int>
+#define pqs                priority_queue<int, vector<int>, greater<int>>
+#define setbits(x)         __builtin_popcountll(x)
+#define zrobits(x)         __builtin_ctzll(x)
+#define mod                1000000007
+#define inf                1e18
+#define ps(x,y)            fixed<<setprecision(y)<<x
+#define mk(arr, n, type)   type *arr=new type[n];
+#define wt(x)              int x; cin>>x; while( x-- )
+#define sp                 ' '
+#define nl                 char(10)
+#define PRT(ar)            for( auto i : ar ) cout<<i<<sp; cout<<nl;
+#define mems(x,ch)         memset(x,ch,sizeof(x))
+#define sortv(x)           sort(x.begin(),x.end())
+#define sortvr(x)          sort(x.rbegin(),x.rend())
+#define all(x)             x.begin(), x.end()
+#define fr(t,a,b)          for( int t=(a); t<=(b); t++)
+#define frr(t,a,b)         for( int t=(a); t>=(b); t--)
+#define cn(x)              int x; cin>>x;
+#define ri(x)              cin >> x
+#define rii(x, y)          cin >> x >> y
+#define riii(x, y, z)      cin >> x >> y >> z
+#define riiii(x, y, z, w)  cin >> x >> y >> z >> w
+#define rvi(nums)          for (auto& x : nums) cin >> x;
+#define dri(x)             int x; cin >> x
+#define drs(s)             string s; cin >> s
+#define drii(x, y)         int x, y; cin >> x >> y
+#define driii(x, y, z)     int x, y, z; cin >> x >> y >> z
+#define driiii(x, y, z, w) int x, y, z, w; cin >> x >> y >> z >> w
+#define drvi(nums, n)      vector<int> nums(n); for (auto& x : nums) cin >> x;
+#define iff(x, y)  if(x) y
 
 const ll N = 1e5 + 5;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
@@ -49,33 +62,47 @@ void fastIO() {
     // #endif
 }
 
+
+
+
 // Kosaraju's Algorithm
-// It is used to print all strongly connected component
+// It is used to print all strongly connected component (scc)
+// scc :- component of a graph in which all nodes are reachable from any nodes
+//    1 -> 2 -> 3 -> 1  
+//  (1, 2, 3)  is a scc
 
 
-class Graph {
 
-    void dfs1(int node, vvi& adj, vi& vis, vi& stk) {
+
+class Solution {
+    void dfs1(int node, vector<int>& vis, stack<int>& stk, vector<vector<int>>& adj) {
         vis[node] = 1;
-
         for (auto nbr : adj[node]) {
-            if (!vis[nbr]) {
-                dfs1(nbr, adj, vis, stk);
-            }
+            if (!vis[nbr])
+                dfs1(nbr, vis, stk, adj);
         }
 
         // add vertex a/c to their finish time
         // add to stack when fun call is complete // add when all its nbr is visited
-        stk.push_back(node);
+        stk.push(node);
     }
 
-    void dfs2(int node, vvi& adj, vi& vis, vi& nums) {
+    void dfs2(int node, vector<int>& vis, vector<vector<int>>& adj) {
+        vis[node] = 1;
+        for (auto nbr : adj[node]) {
+            if (!vis[nbr])
+                dfs2(nbr, vis, adj);
+        }
+    }
+
+
+    // same as dfs2 but it also stores nodes
+    void dfs3(int node, vector<int>& vis, vector<int>& nums, vector<vector<int>>& adj) {
         vis[node] = 1;
         nums.push_back(node);
         for (auto nbr : adj[node]) {
-            if (!vis[nbr]) {
-                dfs2(nbr, adj, vis, nums);
-            }
+            if (!vis[nbr])
+                dfs3(nbr, vis, nums, adj);
         }
     }
 
@@ -84,77 +111,90 @@ public:
         adj[u].push_back(v);
     }
 
-    void printStronglyConnectedComponent(int n, vvi& adj) {
-        // step 1 : store the vertices acc to dfs finish time // means topological sorting
-        // ordering : stack 
-        vi vis(n, 0);
-        vi stk;
 
-        // may be graph is not connected
+    //Function to find number of strongly connected components in the graph.
+    // n -> no of nodes
+    // TC :- O(V+E)
+    int kosaraju(vector<vector<int>>& adj) {
+        int n = adj.size();
+        vector<int> vis(n, 0);
+        stack<int> stk;
+
+        // sort all nodes a/c to their finishing time // means topo sorting
+        for (int i = 0; i < n; i++)
+            if (!vis[i]) dfs1(i, vis, stk, adj);
+
+        // reverse or transpose the graph
+        vector<vector<int>> adjRev(n);
         for (int i = 0; i < n; i++) {
-            if (!vis[i]) {
-                dfs1(i, adj, vis, stk);
-            }
-        }
-        // PRT(stk);
-
-        // step 2 : reverse or transpose the graph 
-        vvi revAdj(n);
-        for( int i=0; i<n; i++ ){
-            for( auto j : adj[i] ){
-                revAdj[j].push_back(i);
-            }
+            vis[i] = 0;
+            for (auto nbr : adj[i])
+                adjRev[nbr].push_back(i); // reversed edge = nbr -> i
         }
 
-        // step 3 : do dfs acc ordering given in the stack in reversed graph, from last to first
-        char component = 'A';
-        vis.assign(n, 0);
-        for (int i = n - 1; i >= 0; i--) {
-            int node = stk[i];
+        // do dfs a/c to ordering given in the stack, in reversed graph, from last to first
+
+        // int scc = 0;
+        // while (stk.size()) {
+        //     int node = stk.top();
+        //     stk.pop();
+        //     if (!vis[node]) dfs2(node, vis, adjRev), scc++;
+        // }
+
+
+        // to print all the scc component
+        int scc = 0;
+        vector< vector<int>> comp;
+        while (stk.size()) {
+            int node = stk.top();
+            stk.pop();
             if (!vis[node]) {
-                vi nums;
-                dfs2(node, revAdj, vis, nums);
-
-                cout << "Component " << component << " : ";
-                PRT(nums);
-                component++;
+                vector<int> nums;
+                dfs3(node, vis, nums, adjRev), scc++;
+                comp.push_back(nums);
             }
         }
 
+        for (auto x : comp) {
+            PRT(x);
+        }
+        return scc;
     }
 };
+
 
 
 
 int32_t main() {
     fastIO();
 
+
     {
         int n = 7;
-        Graph g;
+        Solution sol;
         vvi adj(n);
 
-        g.addEdge(adj, 0, 2);
-        g.addEdge(adj, 2, 1);
-        g.addEdge(adj, 1, 0);
-        g.addEdge(adj, 0, 3);
-        g.addEdge(adj, 3, 5);
-        g.addEdge(adj, 5, 6);
-        g.addEdge(adj, 6, 3);
-        g.addEdge(adj, 3, 4);
+        sol.addEdge(adj, 0, 2);
+        sol.addEdge(adj, 2, 1);
+        sol.addEdge(adj, 1, 0);
+        sol.addEdge(adj, 0, 3);
+        sol.addEdge(adj, 3, 5);
+        sol.addEdge(adj, 5, 6);
+        sol.addEdge(adj, 6, 3);
+        sol.addEdge(adj, 3, 4);
 
-        g.printStronglyConnectedComponent(n, adj);
+        int scc = sol.kosaraju(adj);
+        cout << "No of scc : " << scc << nl; // 3
     }
-    
 
 
 
     return 0;
 }
 
-// OUT:-
-//
-// Component A : 0 1 2
-// Component B : 3 6 5
-// Component C : 4
 
+
+// 0 1 2
+// 3 6 5
+// 4
+// No of scc : 3

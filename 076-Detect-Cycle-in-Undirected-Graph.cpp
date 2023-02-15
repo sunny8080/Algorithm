@@ -49,6 +49,9 @@ void fastIO() {
     // #endif
 }
 
+
+
+
 // Detect cycle in undirected graph by BFS
 // 0-based
 class Solution1 {

@@ -67,7 +67,8 @@ public:
     vi compute_lps_trivial(string s) {
         int n = s.size();
         vi lps(n, 0);
-        // lps[i] = lenngth of the longest substring ending at index i which is prefix and also suffix (i.e., LPS)
+        // lps[i] = lenngth of the longest substring ending at index i which is prefix and also suffix ending at i (i.e., LPS)
+        // lps[i] = k => s[0 ... (k-1)]  == s[(i-k+1) ... i] // so LPS is s[0...(k-1)] of length k
         for (int i = 0; i < n; i++) {
             for (int len = 0; len <= i; len++) {
                 // check prefix == suffix // O(N)
@@ -84,7 +85,8 @@ public:
     vi compute_lps(string s) {
         int n = s.size();
         vector<int> lps(n, 0);
-        // lps[i] = lenngth of the longest substring ending at index i which is prefix and also suffix (i.e., LPS)
+        // lps[i] = lenngth of the longest substring ending at index i which is prefix and also suffix ending at i (i.e., LPS)
+        // lps[i] = k => s[0 ... (k-1)]  == s[(i-k+1) ... i] // so LPS is s[0...(k-1)] of length k
         lps[0] = 0;
 
         // better

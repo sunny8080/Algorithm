@@ -52,7 +52,12 @@ void fastIO() {
 
 // QUE :- https://www.spoj.com/problems/MST/
 
-// Find MST of Undirected Graph by Prim's Algo
+
+// MST (Minimum spanning tree) : Spanning tree with min wt
+// Find MST of Connected Undirected Weighted Graph by Prim's Algo
+// It is a greedy algo
+
+
 
 // 0-based indexing
 class Graph {
@@ -74,9 +79,9 @@ public:
         vi vis(n, 0);
 
         // to store all mst edges with their wt
-        vector<tuple<int,int,int>> mst;
+        vector<tuple<int, int, int>> mst;
 
-        q.push({ 0, 0, 0 }); // {wt, x, y} //  x - y
+        q.push({ 0, 0, 0 }); // {wt, node, par} // node - par
 
         int mstWt = 0;
 
@@ -100,7 +105,7 @@ public:
             // add the new edge in queue // these are neighbours of current edge
             for (auto edge : adj[to]) { // {to, wt}
                 int u, v, w;
-                
+
                 tie(u, v, w) = make_tuple(to, edge.first, edge.second);
                 if (vis[v] == 0) {
                     q.push({ w, u, v });
@@ -108,9 +113,9 @@ public:
             }
         }
 
-        cout<<"MST :- "<<nl;
-        for( auto x : mst){
-            cout << get<0>(x) << sp << get<1>(x) << sp << get<2>(x)<<nl;
+        cout << "MST :- " << nl;
+        for (auto x : mst) {
+            cout << get<0>(x) << sp << get<1>(x) << sp << get<2>(x) << nl;
         }
 
         return mstWt;
@@ -133,35 +138,36 @@ public:
         adj[v].push_back({ u, w });
     }
 
+
+    // TC :- O(ElogE)  // SC : O(E)
     int mstByPrims(vector<vector<pii>>& adj, int n) {
-        vi vis(n, 0);
-        priority_queue<pair<int, int>, vector<pii>, greater<pii>> q;
-        q.push({ 0, 0 }); // {w, v}
+        vector<int> vis(n, 0);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
         int mstWt = 0;
 
-        while (!q.empty()) {
-            auto best = q.top();
-            q.pop();
+        pq.push({ 0, 0 }); // {wt, node}
 
-            int w, to;
-            tie(w, to) = best;
+        while (!pq.empty()) {
+            int wt = pq.top().first, node = pq.top().second;
+            pq.pop();
 
-            if (vis[to]) continue;
+            if (vis[node]) continue;
+            vis[node] = 1;
+            mstWt += wt;
 
-            mstWt += w;
-            vis[to] = 1;
-
-            for (auto nbr : adj[to]) {
-                int u, v, w;
-                tie(u, v, w) = make_tuple(to, nbr.first, nbr.second);
-                if (vis[v] == 0) {
-                    q.push({ w, v });
+            for (auto& e : adj[node]) {
+                int nbr = e.first, nbrWt = e.second;
+                if (!vis[nbr]) {
+                    pq.push({ nbrWt, nbr });
                 }
             }
         }
         return mstWt;
     }
 };
+
+
+
 
 
 
@@ -178,9 +184,9 @@ int32_t main() {
         g.addEdge(adj, 2, 0, 2);
         g.addEdge(adj, 1, 2, 2);
         g.addEdge(adj, 0, 3, 2);
-        cout<<g.primsAlgo(n, adj)<<nl;
+        cout << g.primsAlgo(n, adj) << nl;
     }
-    cout<<nl;
+    cout << nl;
 
 
 
@@ -208,7 +214,7 @@ int32_t main() {
         sol.addEdge(adj, 2, 0, 2);
         sol.addEdge(adj, 1, 2, 2);
         sol.addEdge(adj, 0, 3, 2);
-        cout << sol.mstByPrims(adj, n)<<nl; //5
+        cout << sol.mstByPrims(adj, n) << nl; //5
     }
 
     return 0;

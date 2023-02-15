@@ -227,6 +227,8 @@ public:
         return x;
     }
 
+    
+
     int maximumXOR(int n) {
         node* cur = root;
         int x = 0;
@@ -244,12 +246,43 @@ public:
     }
 
 
+
+    // x^n = miniMumXor
+    int minimumXor(int n) {
+        node* cur = root;
+
+        int mini = 0;
+        for (int i = 31; i >= 0; i--) {
+            int bit = ((n >> i) & 1);
+            if (cur->nxt[bit] && cur->nxt[bit]->cnt > 0) cur = cur->nxt[bit];
+            else {
+                mini |= (1 << i);
+                cur = cur->nxt[(bit ^ 1)];
+            }
+        }
+        // int x = (n ^ mini); 
+        return mini;
+    }
+
+
+    void deletee(int n) {
+        node* cur = root;
+        for (int i = 31; i >= 0; i--) {
+            int bit = ((n >> i) & 1);
+            cur->nxt[bit]->cnt--;
+            cur = cur->nxt[bit];
+        }
+    }
+
+
     int maxPairXor(vector<int>& nums) {
         int maxi = 0;
         for (int i = 0; i < nums.size(); i++) insert(nums[i]);
         for (int i = 0; i < nums.size(); i++) maxi = max(maxi, (nums[i] ^ findX(nums[i])));
         return maxi;
     }
+
+
 
     int less_than_equal_to(int x) {
         node* cur = root;

@@ -51,36 +51,39 @@ void fastIO() {
 
 // To check topological sorting is possible or not
 class Solution {
-    bool cycleFound(int node, vector<int>& vis, vector<int>& stk, vector<vector<int>>& adj) {
+    bool cycleFound(int node, vector<int>& vis, vector<int>& pathVis, vector<vector<int>>& adj) {
         vis[node] = 1;
-        stk[node] = 1;
+        pathVis[node] = 1;
 
         for (auto nbr : adj[node]) {
             if (!vis[nbr]) {
-                if (cycleFound(nbr, vis, stk, adj)) return true;
-            } else if (stk[nbr]) {
+                if (cycleFound(nbr, vis, pathVis, adj)) return true;
+            } else if (pathVis[nbr]) {
                 return true;
             }
         }
-        stk[node] = 0;
+        pathVis[node] = 0;
         return false;
     }
 
 public:
     bool isTopoPossible(int n, vector<vector<int>>& adj) {
 
-        vector<int> vis(n, 0);
-        vector<int> stk(n, 0);
+        vector<int> vis(n, 0); // contains nodes which are visited
+        vector<int> pathVis(n, 0); // path visited - contains nodes which are in current path
 
         for (int i = 0; i < n; i++) {
             if (!vis[i]) {
-                if (cycleFound(i, vis, stk, adj)) return false;
+                if (cycleFound(i, vis, pathVis, adj)) return false;
             }
         }
 
         return true;
     }
 };
+
+
+
 
 
 
@@ -133,7 +136,6 @@ public:
     }
 
 };
-
 
 
 
@@ -207,7 +209,7 @@ public:
 
 
 
-// topological sorting using BFS 
+// topological sorting using BFS  // Kahn's Algorithm
 // it also check topo sorting is possible or not, by checking graph contain cycle or not
 class Solution2 {
 
@@ -234,6 +236,7 @@ public:
 
         while (!indeg.empty()) {
             auto p = *(indeg.begin());
+            indeg.erase(p);
 
             // graph contain cycle // so no topological sorting possible
             if (p.first > 0) {
@@ -242,7 +245,6 @@ public:
             }
 
             ordering.push_back(p.second);
-            indeg.erase(p);
 
             // go to neighbours and cut the indegree of nbr by 1
             for (auto nbr : adj[p.second]) {
@@ -255,7 +257,109 @@ public:
         }
         return ordering;
     }
+
+
+
+
+    vector<int> findOrder1(int n, vector<vector<int>>& adj) {
+        vector<int> indegree(n, 0), ans;
+        for (auto x : adj) {
+            for (auto y : x) {
+                indegree[y]++;
+            }
+        }
+
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (indegree[i] == 0) {
+                q.push(i);
+            }
+        }
+
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            ans.push_back(node);
+
+            for (auto nbr : adj[node]) {
+                indegree[nbr]--;
+                if (indegree[nbr] == 0) {
+                    q.push(nbr);
+                }
+            }
+        }
+
+        // if we can generate topological sorting then there is no cycle
+        // in topological sorting, there is always n nodes
+        return ans.size() == n ? ans : vector<int>();
+    }
 };
+
+
+
+
+
+
+
+
+
+
+
+// it is assumed that graph is DAG (Directed Acyclic Garph) // so no checking is done
+class Solution3 {
+    void dfs(int node, vector<int>& vis, stack<int>& stk, vector<vector<int>>& adj) {
+        vis[node] = 1;
+        for (auto nbr : adj[node]) {
+            if (!vis[nbr]) dfs(nbr, vis, stk, adj);
+        }
+        stk.push(node);
+    }
+public:
+    // topological sorting using dfs
+    vector<int> topoSortDFS(int n, vector<vector<int>>& adj) {
+        vector<int> vis(n, 0), ans;
+        stack<int> stk;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) dfs(i, vis, stk, adj);
+        }
+
+        while (stk.size()) ans.push_back(stk.top()), stk.pop();
+        return ans;
+    }
+
+
+    // topological sorting using bfs // O(V+E)
+    vector<int> topoSortBFS(int n, vector<vector<int>>& adj) {
+        vector<int> indeg(n, 0);
+        for (int i = 0; i < n; i++) {
+            for (auto nbr : adj[i])
+                indeg[nbr]++;
+        }
+
+        queue<int> q;
+        for (int i = 0; i < n; i++) if (indeg[i] == 0) q.push(i);
+        vector<int> ans;
+
+        while (q.size()) {
+            int node = q.front();
+            q.pop();
+            ans.push_back(node);
+
+            for (auto nbr : adj[node]) {
+                indeg[nbr]--;
+                if (indeg[nbr] == 0) q.push(nbr);
+            }
+        }
+        return ans;
+    }
+
+};
+
+
+
+
+
+
 
 
 int32_t main() {

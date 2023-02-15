@@ -407,7 +407,7 @@ public:
         // if node is visited first node of the level, insert it
         if (level == nums.size()) nums.push_back(root->data);
 
-        // visit right first then left
+        // visit right first then left // as it is right view
         if (root->right) rightView(root->right, level + 1, nums);
         if (root->left) rightView(root->left, level + 1, nums);
     }
@@ -422,7 +422,7 @@ public:
         // if node is visited first node of the level, insert it
         if (level == nums.size()) nums.push_back(root->data);
 
-        // visit left first then right
+        // visit left first then right // as it is left view
         if (root->left) leftView(root->left, level + 1, nums);
         if (root->right) leftView(root->right, level + 1, nums);
     }
@@ -457,8 +457,6 @@ class Solution2 {
             // for (int i = 0; i < tmp.size(); i--) res.push_back(tmp[i]);
             res.insert(res.end(), tmp.begin(), tmp.end());
         }
-
-
     }
 
 
@@ -533,7 +531,7 @@ public:
 
 class Solution3 {
 public:
-    // find height // TC - O(N) // SC - O(N)
+    // find height // or find maximum depth // TC - O(N) // SC - O(N) 
     int height(node* root) {
         if (!root) return 0;
         int lh = height(root->left); // left subtree height
@@ -542,7 +540,7 @@ public:
     }
 
 
-    // find height // TC - O(N) // SC - O(N)
+    // find height // or find maximum depth // TC - O(N) // SC - O(N)
     int height2(node* root) {
         if (!root) return 0;
         int level = 0;
@@ -582,10 +580,10 @@ public:
     // if balanced return height of tree otherwise -1
     int dfs_height(node* root) {
         if (!root) return 0;
-        int lh = isBalanced(root->left);
+        int lh = dfs_height(root->left);
         if (lh == -1) return -1;
 
-        int rh = isBalanced(root->right);
+        int rh = dfs_height(root->right);
         if (rh == -1 || abs(lh - rh) > 1) return -1;
         return max(lh, rh) + 1;
     }

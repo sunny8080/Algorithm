@@ -36,34 +36,34 @@ using namespace __gnu_pbds;
 
 const ll cnst = 1e6 + 5;
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-typedef tree< pair<ll,ll>, null_type, less<pair<ll,ll>>, rb_tree_tag, tree_order_statistics_node_update> pbds;
+typedef tree< pair<ll, ll>, null_type, less<pair<ll, ll>>, rb_tree_tag, tree_order_statistics_node_update> pbds;
 
-void fastIO(){
+void fastIO() {
     ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     // #ifndef ONLINE_JUDGE
-	// 	freopen("input.txt", "r", stdin);
-	// 	freopen("output.txt", "w", stdout) ;
+    // 	freopen("input.txt", "r", stdin);
+    // 	freopen("output.txt", "w", stdout) ;
     // #endif
 }
 
 
 
-int32_t main(){
+int32_t main() {
     fastIO();
-    
-    ll q, k; cin>>q>>k;
+
+    ll q, k; cin >> q >> k;
     pbds dist;
     priority_queue<ll> pq;
-    while(q--){
-    	ll type; cin>>type;
-    	if( type == 1 ){
-    		ll x, y; cin>>x>>y;
-    		x = pow(x,2) + pow(y,2);
-    		pq.push(x);
-            if( pq.size() > k ) pq.pop();
-    	}else{
-    		cout<<pq.top()<<nl;
-    	}
+    while (q--) {
+        ll type; cin >> type;
+        if (type == 1) {
+            ll x, y; cin >> x >> y;
+            x = pow(x, 2) + pow(y, 2);
+            pq.push(x);
+            if (pq.size() > k) pq.pop();
+        } else {
+            cout << pq.top() << nl;
+        }
     }
 
 

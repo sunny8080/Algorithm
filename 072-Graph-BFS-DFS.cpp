@@ -50,6 +50,9 @@ void fastIO() {
 }
 
 
+
+
+
 template<typename T>
 class Graph1 {
     map<T, list<T>> ls;
@@ -83,20 +86,20 @@ public:
 
 
     // Recursive fn that will traverse the graph
-    void dfsHelper(T src, map<T, bool> &vis){
-        cout<<src<<sp;
+    void dfsHelper(T src, map<T, bool>& vis) {
+        cout << src << sp;
         vis[src] = true;
-        for( T nbr : ls[src]){
-            if( ! vis[nbr] ){
+        for (T nbr : ls[src]) {
+            if (!vis[nbr]) {
                 dfsHelper(nbr, vis);
             }
         }
     }
 
-    void dfs(T src){
+    void dfs(T src) {
         map<T, bool> vis;
         // Mark all the nodes as not visited int the beginning
-        for( auto x : ls){
+        for (auto x : ls) {
             int node = x.first;
             vis[node] = false;
         }
@@ -104,6 +107,9 @@ public:
     }
 
 };
+
+
+
 
 
 
@@ -125,9 +131,10 @@ class Solution {
     }
 
 public:
+    // bfs in top down manner
     // Function to return Breadth First Traversal of given graph.
+    // TC : O(N + 2*E) // SC : O(N)
     vector<int> bfsOfGraph(int v, vector<int> adj[], int src) {
-        // Code here
         vector<int> vis(v);
         vector<int> bfs;
         queue<int> q;
@@ -153,14 +160,59 @@ public:
 
 
     // Function to return a list containing the DFS traversal of the graph.
+    // TC : O(N + 2*E) // SC : O(N)
     vector<int> dfsOfGraph(int v, vector<int> adj[], int src) {
-        vector<int> vis(v);
+        vector<int> vis(v, 0);
         vector<int> nums;
-        dfsHelper(src, vis, adj, nums); 
+        dfsHelper(src, vis, adj, nums);
+        return nums;
+    }
+
+
+
+
+
+
+    // BFS in bottom up manner
+    // only for tree, where no loops is present
+    vector<int> bfsBottomUp(int n, vector< vector<int>>& adj, int src) {
+        queue<int> q;
+        vector<int> nums;
+
+        for (int node = 0; node < n; node++) {
+            if (node != src && adj[node].size() == 1) q.push(node);
+        }
+
+        while (q.size()) {
+            // cur is leaf node always
+            int cur = q.front();
+            q.pop();
+            nums.push_back(cur);
+
+            // Each node will have only one element which will be its parent
+            int par = adj[cur][0];
+
+            // Remove current node from adjency list of parent node
+            // so current node is not traversed again by parent node.
+            // (due to this step, we remove all child nodes from a parent, at end parent node will only have its parent in adjacency list)
+            adj[par].erase(find(adj[par].begin(), adj[par].end(), cur));
+
+
+            // If parent adj size is 1, it has only it's parent in the adjacency list so,
+            // it means current node is last child of parent so we insert it in queue now
+            if (par != src && adj[par].size() == 1) q.push(par);
+        }
+        nums.push_back(src);
+
         return nums;
     }
 
 };
+
+
+
+
+
 
 int32_t main() {
     fastIO();
@@ -173,9 +225,9 @@ int32_t main() {
     g1.addEdge(3, 4);
     g1.addEdge(4, 5);
     g1.bfs(0); // 0 1 3 2 4 5 
-    cout<<nl;
+    cout << nl;
     g1.dfs(1); // 1 0 3 2 4 5 
-    cout<<nl<<nl;
+    cout << nl << nl;
 
 
 
@@ -191,10 +243,24 @@ int32_t main() {
     }
     vi bfs = sol.bfsOfGraph(v, adj, 0); // 0 1 3 2 4 5 
     PRT(bfs);
+
     vi dfs = sol.dfsOfGraph(v, adj, 1); // 1 0 3 2 4 5 
     PRT(dfs);
-    cout<<nl<<nl;
+    cout << nl << nl;
 
+
+    {
+        vector<vector<int>> nums2 = { {0, 1},{1,2}, {0,3}, {3,5}, {3,4}, {4,6} };
+        int n = 7;
+        vector< vector<int>> adj2(n);
+        for (auto& x : nums2) {
+            adj2[x[0]].push_back(x[1]);
+            adj2[x[1]].push_back(x[0]);
+        }
+        vi bfs2 = sol.bfsBottomUp(n, adj2, 0); // 2 5 6 1 4 0 3
+        PRT(bfs2);
+
+    }
 
 
     return 0;

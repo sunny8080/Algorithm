@@ -64,95 +64,51 @@ void fastIO() {
 
 
 
-// QUE :- https://www.spoj.com/problems/MST/
-// QUE :- https://practice.geeksforgeeks.org/problems/minimum-spanning-tree/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=minimum-spanning-tree
+// Trie to store numbers 
+// 2 approarch
+// For more go there :- https://leetcode.com/problems/k-divisible-elements-subarrays/description/
 
 
-// MST - Minimum Spanning Tree
-// Find MST of Connected Undirected Weighted Graph by Kruskal's Algo
-// DSU data str is used
-// Path compression + Union (or size ) by rank
-
-
-
-
-
-// Disjoint set
-class DSU {
-    int n;
-    vector<int> par, size;
+class Trie {
+    unordered_map<int, Trie*> mpp;
+    int cnt = 0;
 public:
-    DSU(int n) {
-        this->n = n;
-        par.resize(n + 1, -1);
-        size.resize(n + 1, 1);
-    }
-    int findPar(int node) {
-        return par[node] == -1 ? node : par[node] = findPar(par[node]);
-    }
 
-    bool unionBySize(int u, int v) {
-        u = findPar(u);
-        v = findPar(v);
-        if (u == v)return 0;
-        if (size[u] < size[v]) {
-            par[u] = v;
-            size[v] += size[u];
-        } else {
-            par[v] = u;
-            size[u] += size[v];
-        }
-        return 1;
+    // insert recursively
+    int insert(int i, int k, int p, vector<int>& nums) {
+        if (i == nums.size() || k - (nums[i] % p == 0) < 0) return 0;
+        if (mpp[nums[i]] == NULL) mpp[nums[i]] = new Trie();
+        mpp[nums[i]]->cnt++;
+        return (mpp[nums[i]]->cnt == 1) + mpp[nums[i]]->insert(i + 1, k - (nums[i] % p == 0), p, nums);
     }
 };
 
 
 
 
-
-
-class Solution {
+class Trie2 {
+    struct node {
+        unordered_map<int, node*> mpp;
+        int cnt = 0;
+    };
+    node* root;
 public:
-    void addEdge(int u, int v, int wt, vector< vector<pair<int, int>>>& adj) {
-        adj[u].push_back({ v,wt });
-        adj[v].push_back({ u,wt });
+    Trie2() {
+        root = new node();
     }
 
-
-    // kruskal algo // O(N*logN)
-    // Function to find sum of weights of edges of the Minimum Spanning Tree.
-    // adj[i][j] = {v,wt} => {i, u, wt} 
-    int spanningTree(vector<vector<pair<int, int>>>& adj) {
-        vector<vector<int>> edges;
-        int n = adj.size();
-        for (int i = 0; i < n; i++) {
-            for (auto nbr : adj[i]) {
-                edges.push_back({ nbr.second, i, nbr.first }); // {wt, u, v}
-            }
+    // insert iteratively
+    int insert(int i, int k, int p, vector<int>& nums) {
+        node* cur = root;
+        int ans = 0, divCnt = 0;
+        for (int j = i; j < nums.size(); j++) {
+            if (nums[j] % p == 0) divCnt++;
+            if (divCnt > k) break;
+            if (cur->mpp[nums[j]] == NULL) cur->mpp[nums[j]] = new node(), ans++;
+            cur = cur->mpp[nums[j]];
+            cur->cnt++;
         }
-
-        // sort edges by their wt
-        sort(edges.begin(), edges.end());
-        int mstWt = 0;
-        DSU dsu(n); // Initiate a dsu
-        // vector< vector<int>>  mst;
-
-        for (auto& e : edges) {
-            int u, v, wt;
-            tie(wt, u, v) = make_tuple(e[0], e[1], e[2]);
-
-            // take that edge in MST if it doesn't form a cycle 
-            if (dsu.findPar(u) != dsu.findPar(v)) {
-                dsu.unionBySize(u, v);
-                mstWt += wt;
-                // mst.push_back({ u, v, wt });
-            }
-        }
-        // cout << "MST :- " << nl;
-        // for (auto e : mst) {
-        //     cout << e[0] << " -> " << e[1] << " " << e[2] << "\n";
-        // }
-        return mstWt;
+        return ans;
     }
 };
 
@@ -162,27 +118,13 @@ public:
 
 int32_t main() {
     fastIO();
-
-    {
-        Solution sol;
-        int n = 5;
-        vector<vector<pair<int, int>>> adj(n);
-        sol.addEdge(0, 1, 1, adj);
-        sol.addEdge(1, 3, 3, adj);
-        sol.addEdge(3, 2, 4, adj);
-        sol.addEdge(2, 0, 2, adj);
-        sol.addEdge(0, 3, 2, adj);
-        sol.addEdge(1, 2, 2, adj);
-        int mstWt = sol.spanningTree(adj); // 5
-        cout << mstWt << nl;
-    }
-
-
-
-
+    // Solution sol;
+    
+    
+    
     return 0;
 }
-
+    
 
 
 

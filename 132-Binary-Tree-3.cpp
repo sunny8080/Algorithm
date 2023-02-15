@@ -272,7 +272,10 @@ public:
     // METHOD - 2 // TC - O(N) // SC - O(N)
     // Using stack
     void flatternBT2(node* root) {
+        if (!root) return;
         stack<node*> stk;
+        stk.push(root);
+
         while (!stk.empty()) {
             node* cur = stk.top(); stk.pop();
             if (cur->right) stk.push(cur->right);

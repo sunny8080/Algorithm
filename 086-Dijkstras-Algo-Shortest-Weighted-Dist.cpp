@@ -51,12 +51,17 @@ void fastIO() {
 }
 
 
-// Dijkstras Algorithm is used find distance b/w any two nodes in weighted graph
+// Dijkstras Algorithm is used find shortest distance of all the nodes from a single source node in weighted graph
 // SSSP - Single Source Shortest Path  
+// It works for only +vely weighted graph, so graph must not contain -ve weights (due to infinite loop) (for that use bellman ford)
+// It works for both directed and undirected graph
+// It is greedy algo
+// TC :- O(E * logV) , E - no of edges, v - no of vertices 
 
 
-// NOTE :- We use set in Dijkstras,
-// We can also use priority queue but implementation may be tough
+// NOTE :- We can use minimum priority queue or set in Dijkstras algo, but set is faster
+
+
 
 
 
@@ -158,59 +163,121 @@ public:
 
 
 
-// Kruskal algo
-// 1-based indexing
-class Solution {
 
+class Solution {
 public:
     void addEdge(vector<vector<pii>>& adj, int u, int v, int w) {
         adj[u].push_back({ v, w });
         adj[v].push_back({ u, w });
     }
 
-    int findShortestPathByDijkstras(vector<vector<pii>>& adj, int n, int src, int dest = 1) {
-        vi dist(n + 1, INT_MAX);
-        set<pii> st; // {w, u}
 
+
+
+    // Dijkstra Algorithm using min priority queue
+    // find the shortest distance to all node from src node    
+    // TC :- O(E*logV) // E - no of edges, V - no of vertices      
+    vector<int> dijkstra1(vector<vector<pair<int, int>>>& adj, int src) {
+        int n = adj.size();
+        vector<int> dist(n, 1e9);
+        priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> >>  pq; // {wt, node}
+
+        pq.push({ 0, src });
         dist[src] = 0;
-        st.insert({ dist[src], src });
 
-        while (!st.empty()) {
-            auto p = *(st.begin());
-            st.erase(st.begin());
+        while (pq.size()) {
+            int nodeWt = pq.top().first, node = pq.top().second;
+            pq.pop();
 
-            int node, nodeWt;
-            tie(nodeWt, node) = p;
-
-            for (auto nbr_p : adj[node]) {
-                int u, nbr, nbrWt;
-                tie(u, nbr, nbrWt) = make_tuple(node, nbr_p.first, nbr_p.second);
-
+            for (auto nbrIt : adj[node]) {
+                int nbr = nbrIt.first, nbrWt = nbrIt.second;
                 if (nodeWt + nbrWt < dist[nbr]) {
-                    auto f = st.find({ dist[nbr], nbr });
-                    if (f != st.end()) {
-                        st.erase(f);
-                    }
-
                     dist[nbr] = nodeWt + nbrWt;
+                    pq.push({ dist[nbr], nbr });
+                }
+            }
+        }
+        return dist;
+    }
+
+
+
+
+
+    // Dijkstra Algorithm using set
+    // TC :- O(E*logV) // E - no of edges, V - no of vertices      
+    vector<int> dijkstra2(vector<vector<pair<int, int>>>& adj, int src) {
+        int n = adj.size();
+        vector<int> dist(n, 1e9);
+        set<pair<int, int>> st; // {wt, node}
+
+        st.insert({ 0, src });
+        dist[src] = 0;
+
+        while (st.size()) {
+            auto it = *st.begin();
+            int nodeWt = it.first, node = it.second;
+            st.erase(it);
+
+            for (auto nbrIt : adj[node]) {
+                int nbr = nbrIt.first, nbrWt = nbrIt.second;
+
+                if (nbrWt + nodeWt < dist[nbr]) {
+                    // erase it if previously existed
+                    if (dist[nbr] != 1e9) st.erase({ dist[nbr], nbr });
+
+                    dist[nbr] = nbrWt + nodeWt;
                     st.insert({ dist[nbr], nbr });
                 }
             }
         }
-
-        // for (int i = 1; i <= n; i++) {
-        //     if (i != src) {
-        //         if (dist[i] == INT_MAX) cout << -1 << sp;
-        //         else cout << dist[i] << sp;
-        //     }
-        // }
-        // cout<<nl;
-
-        return dist[dest];
+        return dist;
     }
+
+
+    
+
+
+
+    // print shortest path of weighted undirected graph
+    // O(ElogV + N) // 0-based indexing
+    vector<int> shortestPath(int src, int dest, vector<vector<pair<int, int>>>& adj) {
+        int n = adj.size();
+        priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> >> pq;
+        vector<int> dist(n, 1e9);
+        vector<int> par(n, -1);
+
+        pq.push({ 0, src });
+        dist[src] = 0;
+
+        while (pq.size()) {
+            auto nodeWt = pq.top().first, node = pq.top().second;
+            pq.pop();
+
+            for (auto nbrIt : adj[node]) {
+                int nbr = nbrIt.first, nbrWt = nbrIt.second;
+                if (nodeWt + nbrWt < dist[nbr]) {
+                    dist[nbr] = nodeWt + nbrWt;
+                    pq.push({ dist[nbr], nbr });
+                    par[nbr] = node; // set nbr parent as node
+                }
+            }
+        }
+        if (dist[dest] == 1e9) return { -1 }; // dest unreachable
+
+        vector<int> path;
+        int node = dest;
+        while (par[node] != -1) {
+            path.push_back(node);
+            node = par[node];
+        }
+        path.push_back(src);
+
+        reverse(path.begin(), path.end());
+        return path;
+    }
+
 };
-
-
 
 
 
@@ -245,19 +312,22 @@ int32_t main() {
         int dist2 = g2.dijkstrasSSSP("Amritsar", "Bhopal");
         cout << "Wt : " << dist2 << nl;
     }
-    cout<<nl;
+    cout << nl;
 
 
     {
         Solution sol;
         int n = 4;
-        vector<vector<pii>> adj(n+1);
-        sol.addEdge(adj, 1, 2, 24);
-        sol.addEdge(adj, 1, 4, 20);
-        sol.addEdge(adj, 3, 1, 3);
-        sol.addEdge(adj, 4, 3, 12);
-        auto len = sol.findShortestPathByDijkstras(adj, n, 1, 2);
-        cout<<"Min dist from 1 to 2 : "<<len<<nl;
+        vector<vector<pii>> adj(n);
+        sol.addEdge(adj, 0, 1, 24);
+        sol.addEdge(adj, 0, 3, 20);
+        sol.addEdge(adj, 2, 0, 3);
+        sol.addEdge(adj, 3, 2, 12);
+        auto dist = sol.dijkstra1(adj, 1);
+        PRT(dist); // 24 0 27 39 
+
+        auto path = sol.shortestPath(0, 3, adj);
+        PRT(path); // 0 2 3
     }
 
     return 0;
@@ -273,5 +343,5 @@ int32_t main() {
 // Path : Bhopal <- Agra <- Delhi <- Amritsar
 // Wt : 4
 //
-// Min dist from 1 to 2 : 24
-
+// 24 0 27 39
+// 0 2 3

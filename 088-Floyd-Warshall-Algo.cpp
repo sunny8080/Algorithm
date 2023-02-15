@@ -51,14 +51,18 @@ void fastIO() {
 }
 
 
+
 // Floyd Warshall Algorithm
 // It is used to find All pair shortest path distance (APSP)
 // Multiple Source shortest path 
-
+// it helps to detect -ve wt cycle as well
 // O(N^3) time // N -no. of vertices
 // O(N^2) space
-class Solution {
 
+
+
+
+class Solution {
 public:
     void addEdge(vvi& dist, int u, int v, int w) {
         dist[u][v] = w;
@@ -66,15 +70,13 @@ public:
 
     void floydWarshall(vvi& dist, int n) {
         // Phases, in kth phase we included vertices [1, 2... k ] as intermediate vertices
-        for (int k = 1; k <= n; k++) {
+        for (int via = 1; via <= n; via++) {
             // Iterate over entire 2D Matrix
             for (int i = 1; i <= n; i++) {
                 for (int j = 1; j <= n; j++) {
 
-                    // if vertex k is included, can we minimise the dist
-                    if ((dist[i][k] != INT_MAX && dist[k][j] != INT_MAX) and (dist[i][j] > dist[i][k] + dist[k][j])) {
-                        dist[i][j] = dist[i][k] + dist[k][j];
-                    }
+                    // if vertex via is included, can we minimise the dist
+                    dist[i][j] = min(dist[i][j], dist[i][via] + dist[via][j]);
                 }
             }
         }
@@ -96,8 +98,56 @@ public:
             cout << nl;
         }
     }
-
 };
+
+
+
+
+
+
+
+class Solution2 {
+public:
+    // Floyd warshall algo
+    // adjMat is adjacency matrix representation of a graph
+    // adjMar[i][j] = -1 : there is no edge from i to j
+    void shortest_distance(vector<vector<int>>& dist) {
+        int n = dist.size();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][j] == -1) dist[i][j] = 1e9;
+                if (i == j) dist[i][j] = 0;
+            }
+        }
+
+
+        for (int via = 0; via < n; via++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    dist[i][j] = min(dist[i][j], dist[i][via] + dist[via][j]);
+                }
+            }
+        }
+
+
+        // check for -ve wt cycle
+        for (int i = 0; i < n; i++) {
+            if (dist[i][i] < 0) {
+                cout << "-ve cycle wt found" << "\n";
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][j] == 1e9) dist[i][j] = -1;
+            }
+        }
+    }
+};
+
+
+
+
 
 
 
@@ -109,7 +159,7 @@ int32_t main() {
         int n = 4;
 
         // init for every x and y, dist[x->y] = infinity
-        vector<vector<int>> dist(n + 1, vector<int>(n + 1, INT_MAX));
+        vector<vector<int>> dist(n + 1, vector<int>(n + 1, 1e9));
 
         // dist of a node to itself is always 0
         for (int i = 1; i <= n; i++) dist[i][i] = 0;

@@ -51,30 +51,25 @@ void fastIO() {
 
 
 
+
 // Check cycle is present or not in directed graph
 // DFS used
 class Solution {
-    bool cycleHelper(int node, vvi& adj, vi& vis, vi& stk) {
-        // marked node as visited and add it to stack
-        vis[node] = 1;
-        stk[node] = 1;
-
+    bool dfsCycleFound(int node, vector<int>& vis, vector<int>& path, vector< vector<int>>& adj) {
+        // marked node as visited and add it to current path
+        vis[node] = path[node] = 1;
         for (auto nbr : adj[node]) {
-            // if node is already present is current path (check stack), then cycle found
-            if (stk[nbr]) {
-                return true;
-            }
-            if (vis[nbr] == false) {
-                bool isCycle = cycleHelper(nbr, adj, vis, stk);
-                if (isCycle) return true;
+            if (!vis[nbr] && dfsCycleFound(nbr, vis, path, adj)) return 1;
+            else {
+                // if the node has been previously visited and it is in current path, then cycle found
+                if (path[nbr]) return 1;
             }
         }
 
-        // remove from stack
-        stk[node] = 0;
-        return false;
+        // remove from current path
+        path[node] = 0;
+        return 0;
     }
-
 public:
     void addEdge(vvi& adj, int u, int v, bool directed = true) {
         adj[u].push_back(v);
@@ -84,17 +79,16 @@ public:
     }
 
 
-    bool cycleFound(int n, vvi& adj) {
-        vi vis(n, 0);
-        vi stk(n, 0);
+    bool cycleFound(int n, vector<vector<int>>& adj) {
+        vector<int> vis(n, 0), path(n, 0);
 
+        // graph may be not connected
         for (int i = 0; i < n; i++) {
             if (!vis[i]) {
-                if (cycleHelper(i, adj, vis, stk)) return true;
+                if (dfsCycleFound(i, vis, path, adj)) return 1;
             }
         }
-
-        return false;
+        return 0;
     }
 };
 
@@ -114,15 +108,15 @@ public:
         }
     }
 
-    bool isCyclic(int n, vvi& adj) {
-        queue<int> q;
-        vi indegree(n, 0);
+    bool isCyclic(int n, vector< vector<int>>& adj) {
+        vector<int> indegree(n, 0);
         for (auto x : adj) {
             for (auto y : x) {
                 indegree[y]++;
             }
         }
 
+        queue<int> q;
         for (int i = 0; i < n; i++) {
             if (indegree[i] == 0) {
                 q.push(i);
@@ -149,6 +143,10 @@ public:
         return true;
     }
 };
+
+
+
+
 
 
 int32_t main() {
@@ -189,7 +187,7 @@ int32_t main() {
         sol2.addEdge(adj, 2, 3);
         sol2.addEdge(adj, 3, 4);
         sol2.addEdge(adj, 4, 5);
-        sol2.addEdge(adj, 5, 6);    
+        sol2.addEdge(adj, 5, 6);
         sol2.addEdge(adj, 1, 5);
         sol2.addEdge(adj, 4, 2);
         auto isCycle = sol2.isCyclic(n, adj);
