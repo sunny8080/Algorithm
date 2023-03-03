@@ -2,5 +2,4 @@
 *.cph
 *.bin
 *.exe
-000-Observation-1.cpp
-000-Observation-2.cpp
+000-Observation*

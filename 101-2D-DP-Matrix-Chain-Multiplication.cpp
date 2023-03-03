@@ -50,44 +50,52 @@ void fastIO() {
     // #endif
 }
 
-// 2D DP
+// 2D Partition DP
 // QUE :- https://practice.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1
 // Soln : https://www.youtube.com/watch?v=D1U74eFLg_g
 
 
-// To multiply the matrices A[r1, c1] and B[r2, c2]
-// to of multiplication steps or cost = r1*c1*c2
+// To multiply the matrices A[r1, c1] and B[r2, c2], c1 must be equal to r2 and
+// multiplication steps or cost = r1*c1*c2  
 
 
 class Solution {
+    int matrixMultiplicationHelp(int i, int j, vector< vector<int>>& dp, int arr[]) {
+        if (i == j) return 0;
+        if (dp[i][j] != -1) return dp[i][j];
+        int mini = INT_MAX;
+        for (int k = i; k <= j - 1; k++) {
+            mini = min(mini, arr[i - 1] * arr[k] * arr[j] + matrixMultiplicationHelp(i, k, dp, arr) + matrixMultiplicationHelp(k + 1, j, dp, arr));
+        }
+        return dp[i][j] = mini;
+    }
 public:
-    // Bottom up // O(N^3)
+    int matrixMultiplication1(int n, int arr[]) {
+        vector< vector<int>> dp(n, vector<int>(n, -1));
+        return matrixMultiplicationHelp(1, n - 1, dp, arr);
+    }
+
     int matrixMultiplication(int n, int arr[]) {
-        // arr[] :- r1 r2 r3 .... rn cn 
+        vector< vector<int>> dp(n, vector<int>(n, 0));
+
+        // ith mat dimension :- arr[i-1] x arr[i]
         // cost to multiply the matrices is diff with diff combination
-        n--;
-        long long int dp[n][n] = { 0 };
         // dp[r][c] :- minimum steps/cost to multiply matrices from [r...c] // r<=c
         // dp[r][r] = 0
 
-        // traverse the dp diagonally  
-        for (int j = 1; j < n; j++) {
-            int r = 0, c = j;
-
-            while (c < n) {
-                long long int val = INT_MAX;
-
-                // dp[x][y] = multiply (dp[x][k], dp[k][y]) then mulipky these two subparts
-                // dp[x][y] = min{ dp[x][k] + dp[k+1][y] + arr[x]*arr[k+1]*arr[y+1]   :- for all k in [x, y-1] } 
+        for (int i = n - 1; i >= 1; i--) {
+            for (int j = i + 1; j < n; j++) {
+                int mini = INT_MAX;
+                // dp[i][j] = multiply (dp[i][k], dp[k+1][j]) then mulipky these two subparts
+                // dp[i][j] = min{ dp[i][k] + dp[k+1][j] + arr[i-1]*arr[k]*arr[j]   :- for all k in [i, j-1] } 
                 // here k is pivot 
-                for (int pivot = r; pivot <= c - 1; pivot++) {
-                    val = min(val, dp[r][pivot] + dp[pivot + 1][c] + arr[r] * 1LL * arr[pivot + 1] * 1LL * arr[c + 1]);
+                for (int k = i; k <= j - 1; k++) {
+                    mini = min(mini, arr[i - 1] * arr[k] * arr[j] + dp[i][k] + dp[k + 1][j]);
                 }
-                dp[r][c] = val;
-                r++, c++;
+                dp[i][j] = mini;
             }
         }
-        return dp[0][n - 1];
+        return dp[1][n - 1];
     }
 };
 
@@ -106,7 +114,7 @@ int32_t main() {
     {
         int arr[] = { 20, 15, 30, 5, 40 };
         int n = sizeof(arr) / sizeof(arr[0]);
-        cout << sol.matrixMultiplication(n, arr) << nl; // 4500
+        cout << sol.matrixMultiplication(n, arr) << nl; // 7750
     }
 
 

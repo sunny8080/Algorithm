@@ -50,106 +50,91 @@ void fastIO() {
     // #endif
 }
 
-// QUE:-https ://practice.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1?utm_source=gfg&utm_medium=article&utm_campaign=bottom_sticky_on_article
+// QUE :- https://practice.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1
 // QUE :- https://atcoder.jp/contests/dp/tasks/dp_d
 // Soln :- https://www.youtube.com/watch?v=GqOmJHQZivw
-// 1<=N<=1000   1<=W<=10^5    1<=vi<=10^9
+// 1<=N<=1000   1<=W<=10^5    1<=v[i]<=10^9
+
 class Solution1 {
-
-    // Top Down recur fun
-    int solve(int ind, int W, int* wt, int* val, vector<vector<int>>& dp) {
-        if (ind == 0) {
-            if (wt[0] <= W) return val[0];
-            return 0;
-        }
-
-        if (dp[ind][W] != -1) return dp[ind][W];
+    int knapSackHelp(int ind, int w, vector< vector<int>>& dp, int* wt, int* val) {
+        if (ind == 0) return  w >= wt[0] ? val[0] : 0;
+        if (dp[ind][w] != -1) return dp[ind][w];
 
         // for every item we have two choices to take it or to not take it
-        int notTake = solve(ind - 1, W, wt, val, dp);
-        int take = INT_MIN;
-        if (wt[ind] <= W) {
-            take = val[ind] + solve(ind - 1, W - wt[ind], wt, val, dp);
-        }
-        return dp[ind][W] = max(take, notTake);
-
+        int notTake = 0 + knapSackHelp(ind - 1, w, dp, wt, val);
+        int take = w - wt[ind] >= 0 ? val[ind] + knapSackHelp(ind - 1, w - wt[ind], dp, wt, val) : INT_MIN;
+        return dp[ind][w] = max(notTake, take);
     }
 public:
-    // METHOD -1 // TC - O(N*W)
-    // Top Down // W-max weight or capacity of knapSack // SC - O(N*W + N)
-    int knapSack1(int W, int wt[], int val[], int n) {
-        vector<vector<int>> dp(n, vector<int>(W + 1, -1));
+    //Function to return max value that can be put in knapsack of capacity W.
+    // bagWt - max weight or capacity of knapSack 
 
-        for (int w = 0; w < wt[0]; w++) dp[0][w] = 0;
-        for (int w = wt[0]; w <= W; w++) dp[0][w] = val[0];
 
-        return solve(n - 1, W, wt, val, dp);
+    // METHOD -1 : // Top Down - TCO(N*W) // SCO(N*W + N)
+    int knapSack1(int bagWt, int wt[], int val[], int n) {
+        vector< vector<int>> dp(n, vector<int>(bagWt + 1, -1));
+        return knapSackHelp(n - 1, bagWt, dp, wt, val);
     }
 
 
-    // METHOD -2 // TC - O(N*W)
-    // Bottom up // SC - O(N*W)
-    int knapSack2(int W, int wt[], int val[], int n) {
-        vector<vector<int>> dp(n, vector<int>(W + 1, 0));
-        for (int w = wt[0]; w <= W; w++) dp[0][w] = val[0];
+
+
+    // METHOD -2 : // Bottom Up - TCO(N*W) // SCO(N*W)
+    int knapSack2(int bagWt, int wt[], int val[], int n) {
+        vector< vector<int>> dp(n, vector<int>(bagWt + 1, 0));
+        for (int w = wt[0]; w <= bagWt; w++) dp[0][w] = val[0];
 
         for (int i = 1; i < n; i++) {
-            for (int w = 0; w <= W; w++) {
-                // for every item we have two choices to take it or to not take it
+            for (int w = 0; w <= bagWt; w++) {
                 int notTake = 0 + dp[i - 1][w];
-                int take = INT_MIN;
-                if (wt[i] <= w) {
-                    take = val[i] + dp[i - 1][w - wt[i]];
-                }
-                dp[i][w] = max(take, notTake);
+                int take = w - wt[i] >= 0 ? val[i] + dp[i - 1][w - wt[i]] : INT_MIN;
+                dp[i][w] = max(notTake, take);
             }
         }
-        return dp[n - 1][W];
+        return dp[n - 1][bagWt];
     }
 
 
 
 
-    // METHOD - 3.1 // TC - O(N*W)
-    // Bottom up // SC - O(N)
-    int knapSack3(int W, int wt[], int val[], int n) {
-        // // METHOD - 3.1 // TC - O(N*W)  
-        // vector<int> prev(W+1, 0);
-        // vector<int> cur(W+1, 0);
-        // for (int w = wt[0]; w <= W; w++) prev[w] = val[0];
-        // for (int i = 1; i < n; i++) {
-        //     for (int w = 0; w <= W; w++) {
-        //         int notTake = 0 + prev[w];
-        //         int take = INT_MIN;
-        //         if (wt[i] <= w) {
-        //             take = val[i] + prev[w - wt[i]];
-        //         }
-        //         cur[w] = max(take, notTake);
-        //     }
-        //     prev=cur;
-        // }
-        // return cur[W];
+    // METHOD -3 : // Bottom Up - TCO(N*W) // SCO(2*N)
+    int knapSack3(int bagWt, int wt[], int val[], int n) {
+        vector<int> prev(bagWt + 1, 0), cur(bagWt + 1, 0);
+        for (int w = wt[0]; w <= bagWt; w++) prev[w] = val[0];
 
-
-
-        // METHOD - 3.2 // TC - O(N*W)  // Best
-        vector<int> prev(W + 1, 0);
-        for (int w = wt[0]; w <= W; w++) prev[w] = val[0];
         for (int i = 1; i < n; i++) {
-            for (int w = W; w >= 0; w--) {
-                int notTake = prev[w];
-                int take = INT_MIN;
-                if (wt[i] <= w) {
-                    take = val[i] + prev[w - wt[i]];
-                }
+            for (int w = 0; w <= bagWt; w++) {
+                int notTake = 0 + prev[w];
+                int take = w - wt[i] >= 0 ? val[i] + prev[w - wt[i]] : INT_MIN;
+                cur[w] = max(notTake, take);
+            }
+            prev = cur;
+        }
+        return prev[bagWt];
+    }
+
+
+
+    // METHOD -4 : // Bottom Up - TCO(N*W) // SCO(N)  // BEST
+    int knapSack(int bagWt, int wt[], int val[], int n) {
+        vector<int> prev(bagWt + 1, 0);
+        for (int w = wt[0]; w <= bagWt; w++) prev[w] = val[0];
+
+        for (int i = 1; i < n; i++) {
+            for (int w = bagWt; w >= 0; w--) {
+                int notTake = 0 + prev[w];
+                int take = w - wt[i] >= 0 ? val[i] + prev[w - wt[i]] : INT_MIN;
                 prev[w] = max(notTake, take);
             }
         }
-        return prev[W];
+        return prev[bagWt];
     }
-
-
 };
+
+
+
+
+
 
 
 // QUE :- https://atcoder.jp/contests/dp/tasks/dp_e
@@ -172,10 +157,7 @@ public:
         for (int i = 1; i < n; i++) {
             for (int v = 0; v <= maxVal; v++) {
                 int notTake = dp[i - 1][v];
-                int take = INT_MAX;
-                if (val[i] <= v) {
-                    take = wt[i] + dp[i - 1][v - val[i]];
-                }
+                int take = val[i] <= v ? wt[i] + dp[i - 1][v - val[i]] : INT_MAX;
                 dp[i][v] = min(take, notTake);
             }
         }
@@ -203,17 +185,7 @@ int32_t main() {
     fastIO();
     Solution1 sol1;
 
-    int n, W;
-    cin >> n >> W;
-    int wt[n], val[n];
-    for (int i = 0; i < n; i++) cin >> wt[i] >> val[i];
 
-    // cout << sol.knapSack1(W, wt, val, n) << nl;
-    // cout << sol.knapSack2(W, wt, val, n) << nl;
-    // cout << sol1.knapSack3(W, wt, val, n) << nl;
-
-    Solution2 sol2;
-    cout << sol2.knapSack(W, wt, val, n) << nl;
 
 
     return 0;

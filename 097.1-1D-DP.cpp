@@ -53,7 +53,7 @@ void fastIO() {
 
 
 // Dynamic Programming
-
+// Atcoder dp task : https://atcoder.jp/contests/dp/tasks
 
 
 
@@ -63,22 +63,18 @@ public:
     // Normal fib function
     // Time - O(2^N)   // Space - O(N)
     int fib(int n) {
-        if (n == 0 || n == 1) return n; // base case
-        int ans = fib(n - 1) + fib(n - 2); // recursion
-        return ans;
+        if (n <= 1) return n; // base case
+        return fib(n - 1) + fib(n - 2); // recursion
     }
 
 
     // find fib with Top Down approach
     // Time - O(N)   // Space - O(N)
     int fibTD(int n, int* dp) {
-        if (n == 0 || n == 1) return n;
+        if (n <= 1) return n;
+        if (dp[n] != 0) return dp[n]; // look up
 
-        // look up
-        if (dp[n] != 0) return dp[n];
-
-        int ans = fibTD(n - 1, dp) + fibTD(n - 2, dp);
-        return (dp[n] = ans);
+        return dp[n] = fibTD(n - 1, dp) + fibTD(n - 2, dp);
     }
 
 
@@ -101,17 +97,16 @@ public:
     // find fib with Bottom Up approach with space optimized
     // Time - O(N)   // Space - O(1)
     int fibBUspaceOpti(int n) {
-        if (n == 0 || n == 1) return n;
+        if (n <= 1) return n;
         int a = 0;
         int b = 1;
-        int c = 0;
 
         for (int i = 2; i <= n; i++) {
-            c = a + b;
+            int c = a + b;
             a = b;
             b = c;
         }
-        return c;
+        return b;
     }
 };
 
@@ -128,8 +123,7 @@ public:
     int dp[10005] = {};
 
     // Top Down approach
-    int minSteps1(int n)
-    {
+    int minSteps1(int n){
         // Your code goes here
         if (n == 0) return 0;
         if (n == 1) return 0;
@@ -173,61 +167,8 @@ public:
 
 
 
-// coins Change
-// QUE :- https://leetcode.com/problems/coin-change/
-class Solution3 {
-    int dp[10005] = { 0 };
-    int solveTD(vector<int>& coins, int amt) {
-        if (amt == 0) return 0;
-        if (dp[amt] != 0) return dp[amt];
-
-        int n = coins.size();
-        int ans = INT_MAX;
-
-        for (int i = 0;i < n; i++) {
-            if (amt - coins[i] >= 0) {
-                int subProb = solveTD(coins, amt - coins[i]);
-                if (subProb != INT_MAX) ans = min(ans, subProb + 1);
-            }
-        }
-        return dp[amt] = ans;
-    }
-public:
-    int coinChange(vector<int>& coins, int amt) {
-        // top down approach // O(N*A) // A-amt
-        // memset(dp, 0, sizeof(dp));
-        // int ans = solveTD(coins, amt);
-        // return ans == INT_MAX ? -1 : ans;
-
-
-        // Bottom Up approach
-        int dp[100005] = { 0 };
-        for (int n = 1; n <= amt; n++) {
-            dp[n] = INT_MAX;
-
-            for (int i = 0; i < coins.size(); i++) {
-                if (amt - coins[i] >= 0) {
-                    int subProb = dp[n - coins[i]];
-                    if (subProb != INT_MAX) dp[n] = min(dp[n], subProb + 1);
-                }
-            }
-        }
-        return (dp[amt] == INT_MAX) ? -1 : dp[amt];
-    }
-
-};
-
-
-
-
-
-
-
-
-
 // climing stairs
 // QUE :- https://leetcode.com/problems/climbing-stairs/
-#define vi vector<int>
 class Solution4 {
     int dp[1005] = { 0 };
 public:
@@ -248,7 +189,7 @@ public:
 
     // Bottom up // O(N*K)
     int minSteps2(int n, int k = 2) {
-        vi dp(n + 1, 0);
+        vector<int> dp(n + 1, 0);
         dp[0] = 1;
         for (int i = 1; i <= n;i++) {
             dp[i] = 0;
@@ -288,42 +229,88 @@ public:
 
 
 // Rod cutting
-// QUE :- https://practice.geeksforgeeks.org/problems/rod-cutting0840/1
+// QUE  :- https://practice.geeksforgeeks.org/problems/rod-cutting0840/1
+// Soln :- https://youtu.be/mO8XpGoJwuo?list=PLgUwDviBIf0qUlt5H_kiKYaNSqJ81PMMY
 // Soln : https://youtu.be/zYZasir27Tg
 class Solution6 {
-    int dp[1005] = { 0 };
-public:
-    // Top down
-    int cutRod1(int price[], int n) {
-        //code here
-        if (n <= 0) return 0;
-        if (dp[n] != 0) return dp[n];
-
-        int ans = INT_MIN;
-        for (int i = 0; i < n; i++) {
-            int cut = i + 1;
-            int currProfit = price[i] + cutRod(price, n - cut);
-            ans = max(ans, currProfit);
-        }
-        return dp[n] = ans;
+    int cutRodHelp1(int ind, int len, vector< vector<int>>& dp, int* price) {
+        if (ind == 0) return len * price[0];
+        if (dp[ind][len] != -1) return dp[ind][len];
+        int notTake = cutRodHelp1(ind - 1, len, dp, price);
+        int rodLenth = ind + 1;
+        int take = len - rodLenth >= 0 ? price[ind] + cutRodHelp1(ind, len - rodLenth, dp, price) : INT_MIN;
+        return dp[ind][len] = max(notTake, take);
     }
 
-    // Bottom up
-    int cutRod(int price[], int n) {
-        //code here
-        int dp[n + 1] = { 0 };
+
+    int cutRodHelp2(int len, vector<int>& dp, int* price, int n) {
+        if (len <= 0) return 0;
+        if (len < 0) return -1e9;
+        if (dp[len] != -1) return dp[len];
+        int ans = -1e9;
+        for (int cut = 1; cut <= len; cut++) ans = max(ans, price[cut - 1] + cutRodHelp2(len - cut, dp, price, n));
+        return dp[len] = ans;
+    }
+public:
+    // Top Down
+    int cutRod1(int price[], int n) {
+        vector< vector<int>> dp(n, vector<int>(n + 1, -1));
+        return cutRodHelp1(n - 1, n, dp, price);
+    }
+
+    // Bottom Up
+    int cutRod2(int price[], int n) {
+        vector< vector<int>> dp(n, vector<int>(n + 1, 0));
+        for (int l = 0; l <= n; l++) dp[0][l] = price[0] * l;
+
+        for (int ind = 1; ind < n; ind++) {
+            for (int len = 0; len <= n; len++) {
+                int notTake = dp[ind - 1][len];
+                int rodLenth = ind + 1;
+                int take = len - rodLenth >= 0 ? price[ind] + dp[ind][len - rodLenth] : INT_MIN;
+                dp[ind][len] = max(notTake, take);
+            }
+        }
+        return dp[n - 1][n];
+    }
+
+
+    int cutRod3(int price[], int n) {
+        vector<int> prev(n + 1, 0);
+        for (int l = 0; l <= n; l++) prev[l] = price[0] * l;
+
+        for (int ind = 1; ind < n; ind++) {
+            for (int len = 0; len <= n; len++) {
+                int notTake = prev[len];
+                int rodLenth = ind + 1;
+                int take = len - rodLenth >= 0 ? price[ind] + prev[len - rodLenth] : INT_MIN;
+                prev[len] = max(notTake, take);
+            }
+        }
+        return prev[n];
+    }
+
+
+    // Different approach
+    // Top Down
+    int cutRod4(int price[], int n) {
+        vector<int> dp(n + 1, -1);
+        return cutRodHelp2(n, dp, price, n);
+    }
+
+
+    // Different approach
+    // Bottom Up
+    int cutRod5(int price[], int n) {
+        vector<int> dp(n + 1, 0);
         dp[0] = 0;
 
         for (int len = 1; len <= n; len++) {
-            int ans = INT_MIN;
-            for (int i = 0; i < len; i++) {
-                int cut = i + 1;
-                int currProfit = price[i] + dp[len - cut];
-                ans = max(ans, currProfit);
+            dp[len] = INT_MIN;
+            for (int cut = 1; cut <= len; cut++) {
+                dp[len] = max(dp[len], price[cut - 1] + dp[len - cut]);
             }
-            dp[len] = ans;
         }
-
         return dp[n];
     }
 };
@@ -385,7 +372,7 @@ int32_t main() {
     cout << nl;
 
 
-    
+
 
 
 

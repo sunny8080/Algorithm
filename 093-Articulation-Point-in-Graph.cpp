@@ -96,6 +96,7 @@ class Solution {
                 low[node] = min(low[node], tin[nbr]);
             }
         }
+        // slight change from bridge prog 
         if (par == -1 && child > 1) isArti[node] = 1;
     }
 

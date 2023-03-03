@@ -51,7 +51,7 @@ void fastIO() {
 
 
 // QUE :- https://leetcode.com/problems/longest-increasing-subsequence/
-// Go to 118
+// Go to 116
 
 // Solution using Fenwick Tree or BIT // O(NlogN)
 class Solution {
