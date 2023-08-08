@@ -21,53 +21,93 @@
 #define PRT(ar) for( auto i : ar )cout<<i<<sp;cout<<nl;
 using namespace std;
 
+
+
+
+// gfg : https://www.geeksforgeeks.org/floyds-cycle-finding-algorithm/
+// Leet : https://leetcode.com/problems/linked-list-cycle/
+// Leet 2 : https://leetcode.com/problems/linked-list-cycle-ii/
+
+
+
 struct ListNode {
     int val;
-    ListNode *next;
-    ListNode() : val(0), next(nullptr) {}
-    ListNode(int x) : val(x), next(nullptr) {}
-    ListNode(int x, ListNode *next) : val(x), next(next) {}
+    ListNode* next;
+    ListNode(): val(0), next(nullptr) {}
+    ListNode(int x): val(x), next(nullptr) {}
+    ListNode(int x, ListNode* next): val(x), next(next) {}
 };
+
 
 
 class Solution {
 public:
     // Floyd's Algorithm  or  Hare and Tortoise Algorithm
     // To check LinkedList have Cycle or Not
-    bool hasCycle(ListNode *head) {
-        // // METHOD 1
-        // if( head == NULL ) return false;
-        // unordered_set<ListNode*> stt;
-        // while( head ){
-        //    if( stt.find(head) != stt.end() ) return true;
-        //    stt.insert(head);
-        //    head = head->next;
-        // }
-        // return false;
-
-        // // METHOD 2
-        if( head == NULL ) return false;
-        ListNode *slow = head;
-        ListNode *fast = head;
-        while( fast->next && fast->next->next ){
-            slow = slow->next;
-            fast = fast->next->next;
-            if( slow == fast ) return true;
+    bool hasCycle1(ListNode* head) {
+        unordered_set<ListNode*> st;
+        ListNode* cur = head;
+        while (cur) {
+            if (!st.insert(cur).second) return 1;
+            cur = cur->next;
         }
-        return false;
+        return 0;
     }
 
+    bool hasCycle(ListNode* head) {
+        ListNode* fast = head, * slow = head;
+        while (fast && fast->next) {
+            fast = fast->next->next;
+            slow = slow->next;
+            if (fast == slow) return 1;
+        }
+        return 0;
+    }
+
+
+
+    // returns node from where cycle starts if cycle present o/w returns NULL
+    ListNode* detectCycle1(ListNode* head) {
+        unordered_set<ListNode*> st;
+        ListNode* cur = head;
+        while (cur) {
+            if (!st.insert(cur).second) return *st.insert(cur).first;
+            cur = cur->next;
+        }
+        return NULL;
+    }
+
+
+    ListNode* detectCycle(ListNode* head) {
+        if (!head || !head->next) return NULL;
+        ListNode* fast = head, * slow = head;
+
+        while (fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (slow == fast) {
+                slow = head;
+                while (slow != fast) slow = slow->next, fast = fast->next;
+                return slow;
+            }
+        }
+        return NULL;
+    }
+
+
+
+
     // To create a cycle if there was no cycle
-    void makeCycle( ListNode *head, int pos ){
-        if( !head ) return;
-        if( hasCycle(head) ) { 
-            cout<<"Already hava a Cycle, can't create other \n";
+    void makeCycle(ListNode* head, int pos) {
+        if (!head) return;
+        if (hasCycle(head)) {
+            cout << "Already hava a Cycle, can't create other \n";
             return;
         }
-        ListNode *ptr=head, *startNode;
-        int cnt=1;
-        while( ptr->next ){
-            if( cnt == pos )
+        ListNode* ptr = head, * startNode;
+        int cnt = 1;
+        while (ptr->next) {
+            if (cnt == pos)
                 startNode = ptr;
             ptr = ptr->next;
             cnt++;
@@ -75,72 +115,78 @@ public:
         ptr->next = startNode;
     }
 
+
+
+
     // To Remove cycle if there is
-    void removeCycle( ListNode *head ){
-        if( !head ) return ;
-        if( !hasCycle(head) ){
-            cout<<"LinkedList not have a cycle \n";
+    void removeCycle(ListNode* head) {
+        if (!head) return;
+        if (!hasCycle(head)) {
+            cout << "LinkedList not have a cycle \n";
             return;
         }
-        ListNode *slow = head;
-        ListNode *fast = head;
-        do{
+        ListNode* slow = head;
+        ListNode* fast = head;
+        do {
             slow = slow->next;
             fast = fast->next->next;
-        }while( slow!= fast );
+        } while (slow != fast);
         fast = head;
-        while( slow->next != fast->next )
-            slow=slow->next, fast=fast->next;
+        while (slow->next != fast->next)
+            slow = slow->next, fast = fast->next;
         slow->next = NULL;
     }
 
+
+    
+
     // To create a LinkedList if a vector is given;
-    ListNode* createList( vector<int> &nums ){
-        if( nums.size() == 0 ) return NULL;
-        ListNode *head = new ListNode(0);
-        ListNode *ptr=head;
-        for( int x : nums )
-            ptr->next = new ListNode(x), ptr=ptr->next;
+    ListNode* createList(vector<int>& nums) {
+        if (nums.size() == 0) return NULL;
+        ListNode* head = new ListNode(0);
+        ListNode* ptr = head;
+        for (int x : nums)
+            ptr->next = new ListNode(x), ptr = ptr->next;
         return head->next;
     }
 
     // To print values
-    void printList( ListNode *head ){
-        if( !head ) return;
-        if( hasCycle(head) ){
-            cout<<"List have cycle, first remove that\n";
-            return ;
+    void printList(ListNode* head) {
+        if (!head) return;
+        if (hasCycle(head)) {
+            cout << "List have cycle, first remove that\n";
+            return;
         }
-        cout<<"List : ";
-        while( head )
-            cout<<head->val<<sp, head = head->next;
-        cout<<nl;
-    } 
+        cout << "List : ";
+        while (head)
+            cout << head->val << sp, head = head->next;
+        cout << nl;
+    }
 
 };
 
 
-int32_t main(){
+int32_t main() {
     Solution sol;
     vector<int> arr;
 
-    arr.operator=({1, 5, 7, 10, 15, 19, 25, 29, 30 });
-    ListNode *head = sol.createList(arr);
-    sol.printList(head); cout<<nl;
+    arr.operator=({ 1, 5, 7, 10, 15, 19, 25, 29, 30 });
+    ListNode* head = sol.createList(arr);
+    sol.printList(head); cout << nl;
 
-    if( sol.hasCycle(head) ) cout<<"List have a cycle"<<nl;
-    else cout<<"List have not a cycle"<<nl<<nl;
+    if (sol.hasCycle(head)) cout << "List have a cycle" << nl;
+    else cout << "List have not a cycle" << nl << nl;
 
-    sol.makeCycle(head,3);
-    if( sol.hasCycle(head) ) cout<<"List have a cycle"<<nl;
-    else cout<<"List have not a cycle"<<nl;
-    sol.printList(head); cout<<nl;
+    sol.makeCycle(head, 3);
+    if (sol.hasCycle(head)) cout << "List have a cycle" << nl;
+    else cout << "List have not a cycle" << nl;
+    sol.printList(head); cout << nl;
 
     sol.removeCycle(head);
-    if( sol.hasCycle(head) ) cout<<"List have a cycle"<<nl;
-    else cout<<"List have not a cycle"<<nl;
+    if (sol.hasCycle(head)) cout << "List have a cycle" << nl;
+    else cout << "List have not a cycle" << nl;
     sol.printList(head);
-    cout<<"\n";
+    cout << "\n";
 
     return 0;
 }
